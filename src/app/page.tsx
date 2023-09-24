@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetClose,
@@ -11,15 +12,19 @@ import {
 
 export default function Home() {
   return (
-    <main className="bg-slate-500 h-screen">
+    <main className="bg-red-500 h-screen">
       <Sheet>
-        <SheetTrigger>Open</SheetTrigger>
+        <SheetTrigger>
+          <Button className="bg-slate-300 text-black hover:bg-slate-400">
+            Open
+          </Button>
+        </SheetTrigger>
         <SheetContent>
           <SheetHeader>
             <SheetTitle>Are you sure absolutely sure?</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. This will permanently delete your account and remove your data
-              from our servers.
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
