@@ -16,6 +16,10 @@ const nextConfig = {
         destination: "/dashboard",
       },
       {
+        source: "/painel/perfil",
+        destination: "/dashboard/profile",
+      },
+      {
         source: "/entrar",
         destination: "/signIn",
       },

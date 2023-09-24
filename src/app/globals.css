@@ -74,3 +74,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .bg-application {
+    background-color: #ffffff;
+    opacity: 1;
+    background-image: linear-gradient(#e0e0e0 0.9px, transparent 0.9px),
+      linear-gradient(to right, #e0e0e0 0.9px, #ffffff 0.9px);
+    background-size: 18px 18px;
+  }
+}
