@@ -22,7 +22,7 @@ import {
 
 export default function DashboardPage() {
   return (
-    <main className="h-screen pt-8">
+    <main className="h-full pt-8">
       <div className="max-w-7xl mx-auto px-8 flex flex-col">
         <div className="flex justify-between">
           <h1 className="text-2xl font-medium">Gráficos</h1>
@@ -37,7 +37,7 @@ export default function DashboardPage() {
                 <SheetTitle>Criando perfil para análise do robô</SheetTitle>
                 <SheetDescription>
                   Configure as opções necessárias para que o robô funcione de
-                  acordo com as sua escolhas de análise
+                  acordo com as suas escolhas de análise
                 </SheetDescription>
               </SheetHeader>
 
@@ -63,10 +63,6 @@ export default function DashboardPage() {
               <div className="py-4">
                 <ProfileForm />
               </div>
-
-              {/* <DialogFooter>
-                <Button type="submit">Criar</Button>
-              </DialogFooter> */}
             </DialogContent>
           </Dialog>
         </div>
