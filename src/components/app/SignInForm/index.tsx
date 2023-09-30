@@ -7,6 +7,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputErrorMessage } from "../InputErrorMessage";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 const signInSchema = z.object({
   email: z.string().email("E-mail é necessário"),
@@ -16,16 +20,32 @@ const signInSchema = z.object({
 type SignInValues = z.infer<typeof signInSchema>;
 
 export const SignInForm: React.FC = () => {
+  const router = useRouter();
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignInValues>({
     resolver: zodResolver(signInSchema),
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+  const onSubmit = handleSubmit(async (formData) => {
+    const { email, password } = formData;
+
+    const response = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (response?.error)
+      return toast({
+        description: "Autenticação falhou",
+        variant: "destructive",
+      });
+
+    if (response?.ok) return router.push(`/painel`);
   });
 
   return (
@@ -42,7 +62,13 @@ export const SignInForm: React.FC = () => {
         <InputErrorMessage error={errors.password} />
       </div>
 
-      <Button type="submit">Entrar</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          "Entrar"
+        )}
+      </Button>
     </form>
   );
 };

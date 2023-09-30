@@ -1,10 +1,9 @@
-import { ProfileForm } from "@/components/app/ProfileForm";
+import { BotProfileForm } from "@/components/app/BotProfileForm";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -42,7 +41,7 @@ export default function DashboardPage() {
               </SheetHeader>
 
               <div className="py-4">
-                <ProfileForm />
+                <BotProfileForm />
               </div>
             </SheetContent>
           </Sheet> */}
@@ -61,7 +60,7 @@ export default function DashboardPage() {
               </DialogHeader>
 
               <div className="py-4">
-                <ProfileForm />
+                <BotProfileForm />
               </div>
             </DialogContent>
           </Dialog>
