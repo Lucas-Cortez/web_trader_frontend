@@ -9,7 +9,8 @@ type AuthCredentials = {
 
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  jwt: { maxAge: 60 * 60 },
+  pages: { signIn: "/entrar", error: "/error", newUser: "/cadastrar" },
+  session: { maxAge: 60 * 60 },
   providers: [
     CredentialsProvider({
       name: "App Credentials",
@@ -36,7 +37,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user }) {
       // console.log("===================TOKEN======================");
       // console.log(token);
       // console.log(user);
@@ -51,10 +52,10 @@ export const authOptions: AuthOptions = {
 
       return token;
     },
-    async session({ session, user, token }) {
+    async session({ session, token }) {
       // console.log("===================SESSION======================");
       // console.log(session);
-      // console.log(user);
+      // // console.log(user);
       // console.log(token);
       // console.log("================================================");
 
@@ -64,6 +65,20 @@ export const authOptions: AuthOptions = {
         email: token.email as string,
       };
       session.accessToken = token.jwtToken as string;
+
+      // const expiration = new Date(Number(token.exp) * 1000);
+      // const currentDate = new Date();
+
+      // console.log(token.exp);
+
+      // console.log("currentDate: ", currentDate);
+      // console.log(currentDate > expiration);
+
+      // // if (currentDate > expiration) {
+      // //   return Promise.reject({
+      // //     error: "Session has expired",
+      // //   });
+      // // }
 
       return session;
     },

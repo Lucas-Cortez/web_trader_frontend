@@ -13,17 +13,125 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CheckboxCardInput } from "../CheckboxCardInput";
-import { useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { handleWS } from "@/stores";
+import { useEffect } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileBotService } from "@/services";
+import { getSession } from "next-auth/react";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
+
+const createBotProfileSchema = z.object({
+  name: z.string(),
+  interval: z.string(),
+  symbol: z.string(),
+  quantity: z.coerce.number().positive(),
+  // strategiesIds: z.array(z.string().nonempty("must be an id")).nonempty("must contain strategies ids"),
+  strategies: z
+    .array(
+      z.object({
+        checked: z.boolean(),
+        id: z.string(),
+        tag: z.string(),
+        title: z.string(),
+        description: z.string(),
+      })
+    )
+    .refine((v) => v.some((s) => s.checked), {
+      message: "Deve selecionar pelo menos uma estratégia",
+    }),
+});
+
+type createBotProfileValues = z.infer<typeof createBotProfileSchema>;
+
+type Strategy = {
+  id: string;
+  tag: string;
+  name: string;
+  title: string;
+
+  description: string;
+};
+
+const STRATEGIES: Strategy[] = [
+  {
+    id: "651a2f56ef1632834c286aeb",
+    tag: "bollinger_bands",
+    name: "Bollinger Bands",
+    title: "Bandas de Bollinger (BB)",
+    description:
+      "É uma estratégia de análise na qual são utilizadas duas bandas que se ajustam à volatilidade do mercado. A compra ocorre quando o preço atinge a banda inferior, e a venda quando o preço atinge a banda superior.",
+  },
+  {
+    id: "651a2f56ef1632834c286aec",
+    tag: "relative_strength_index",
+    name: "Relative Strength Index",
+    title: "Indíce de Força Relativa (IFR)",
+    description:
+      "É uma estratégia na qual é utilizado um indicador para identificar oportunidades de compra quando o ativo está sobrevendido (abaixo de 30) e de venda quando está sobrecomprado (acima de 70). Isso ajuda a tomar decisões de negociação com base na força e direção da tendência do mercado.",
+  },
+];
+
+async function getStrategies(): Promise<Strategy[]> {
+  return STRATEGIES;
+}
 
 export const BotProfileForm: React.FC = () => {
-  const { handleSubmit } = useForm();
+  const { handleSubmit, control, register, watch } =
+    useForm<createBotProfileValues>({
+      resolver: zodResolver(createBotProfileSchema),
+    });
 
-  const onSubmit = handleSubmit((formData) => {
-    console.log(formData);
-    // handleWS();
+  // const log = watch();
+
+  const onSubmit = handleSubmit(
+    async (formData) => {
+      const { name, interval, quantity, symbol, strategies } = formData;
+      const session = await getSession();
+      console.log(formData);
+
+      const response = await profileBotService.create(
+        name,
+        interval,
+        symbol,
+        quantity,
+        strategies.filter((v) => v.checked).map((v) => v.id),
+        session?.accessToken || ""
+      );
+      console.log(response);
+
+      // handleWS();
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+
+  const { fields: strategies, append } = useFieldArray({
+    control,
+    name: "strategies",
   });
+
+  useEffect(() => {
+    (async () => {
+      const data = await getStrategies();
+
+      data.forEach((s) => {
+        append({ checked: false, ...s });
+      });
+    })();
+  }, [append]);
+
+  // useEffect(() => {
+  //   console.log(log);
+  // }, [log]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit}>
@@ -34,42 +142,64 @@ export const BotProfileForm: React.FC = () => {
             (Nome para melhor identificação do seu gráfico)
           </span>
         </Label>
-        <Input />
+        <Input type="text" {...register("name")} />
       </div>
 
       <div className="flex gap-4">
         <div className="w-full">
           <Label>Símbolo</Label>
 
-          <Select>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+          <Controller
+            control={control}
+            name="symbol"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
 
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="btcbrl">BTCBRL</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="btcbrl">BTCBRL</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
 
         <div className="w-full">
           <Label>Intervalo</Label>
 
-          <Select>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+          <Controller
+            control={control}
+            name="interval"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
 
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="1m">1 minuto</SelectItem>
-                <SelectItem value="5m">5 minutos</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="1m">1 minuto</SelectItem>
+                    <SelectItem value="5m">5 minutos</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
+      </div>
+
+      <div>
+        <Label>
+          Valor{" "}
+          <span className="text-xs text-gray-400">
+            (Montante a ser negociado a cada transação)
+          </span>
+        </Label>
+        <Input type="number" step="0.01" {...register("quantity")} />
       </div>
 
       <div>
@@ -77,32 +207,25 @@ export const BotProfileForm: React.FC = () => {
 
         <ScrollArea className="h-40 pr-3">
           <div className="flex flex-col gap-2">
-            <div>
-              <CheckboxCardInput
-                title="Bandas de Bollinger"
-                description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, officia."
-                id="bb"
-              />
-            </div>
-
-            <div>
-              <Input type="checkbox" id="opa2" className="peer sr-only" />
-
-              <Label
-                htmlFor="opa2"
-                className="peer-checked:[&>div]:border-black"
-              >
-                <div className="border rounded-md p-3 cursor-pointer">
-                  <h3 className="font-medium text-sm mb-1">
-                    Índice de Força Relativa
-                  </h3>
-                  <p className="text-xs text-gray-500 font-normal">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Vitae, officia.
-                  </p>
+            {strategies.map((strategy, index) => {
+              return (
+                <div key={index}>
+                  <Controller
+                    control={control}
+                    name={`strategies.${index}.checked`}
+                    render={({ field }) => (
+                      <CheckboxCardInput
+                        title={strategy.title}
+                        description={strategy.description}
+                        id={field.name}
+                        {...field}
+                        value={strategy.tag}
+                      />
+                    )}
+                  />
                 </div>
-              </Label>
-            </div>
+              );
+            })}
           </div>
         </ScrollArea>
       </div>
