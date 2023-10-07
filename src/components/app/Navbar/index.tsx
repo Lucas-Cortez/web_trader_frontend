@@ -40,8 +40,10 @@ export const Navbar: React.FC = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <History className="mr-2 h-4 w-4" />
-                <span>Histórico</span>
+                <Link href={"/painel/historico"} className="flex w-full">
+                  <History className="mr-2 h-4 w-4" />
+                  <span>Histórico</span>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
 

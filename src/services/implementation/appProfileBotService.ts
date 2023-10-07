@@ -19,7 +19,7 @@ export class AppProfileBotService implements ProfileBotService {
     symbol: string,
     quantity: number,
     strategiesIds: string[],
-    accessToken: string
+    accessToken: string,
   ): Promise<any> {
     console.log(this.url);
 
@@ -43,13 +43,6 @@ export class AppProfileBotService implements ProfileBotService {
 
     const data = (await response.json()) as ProfileResponse;
 
-    return new Profile(
-      data.id,
-      data.name,
-      data.interval,
-      data.symbol,
-      data.strategiesIds,
-      data.quantity
-    );
+    return new Profile(data.id, data.name, data.interval, data.symbol, data.strategiesIds, data.quantity);
   }
 }

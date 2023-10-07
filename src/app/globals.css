@@ -73,6 +73,26 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* width */
+  ::-webkit-scrollbar {
+    @apply h-2 w-2;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-500 rounded-full;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600 rounded-full;
+  }
 }
 
 @layer utilities {

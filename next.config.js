@@ -21,6 +21,10 @@ const nextConfig = {
         destination: "/dashboard/profile",
       },
       {
+        source: "/painel/historico",
+        destination: "/dashboard/history",
+      },
+      {
         source: "/entrar",
         destination: "/signIn",
       },

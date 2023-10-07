@@ -7,6 +7,6 @@ export interface ProfileBotService {
     symbol: string,
     quantity: number,
     strategiesIds: string[],
-    accessToken: string
+    accessToken: string,
   ): Promise<Profile>;
 }

@@ -89,8 +89,6 @@ export const BotProfileForm: React.FC = () => {
       resolver: zodResolver(createBotProfileSchema),
     });
 
-  // const log = watch();
-
   const onSubmit = handleSubmit(
     async (formData) => {
       const { name, interval, quantity, symbol, strategies } = formData;
@@ -128,10 +126,6 @@ export const BotProfileForm: React.FC = () => {
       });
     })();
   }, [append]);
-
-  // useEffect(() => {
-  //   console.log(log);
-  // }, [log]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit}>

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ui:add": "pnpm dlx shadcn-ui@latest add"
+    "ui:add": "pnpm dlx shadcn-ui@latest add",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
@@ -45,6 +46,7 @@
     "zustand": "^4.4.1"
   },
   "devDependencies": {
-    "@types/ws": "^8.5.6"
+    "@types/ws": "^8.5.6",
+    "prettier": "^3.0.3"
   }
 }

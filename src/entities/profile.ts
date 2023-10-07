@@ -6,6 +6,6 @@ export class Profile {
     public readonly symbol: string,
     public readonly strategiesIds: string[],
     public readonly quantity: number,
-    public readonly lastOrder?: Date
+    public readonly lastOrder?: Date,
   ) {}
 }

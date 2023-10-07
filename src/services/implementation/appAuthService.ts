@@ -13,10 +13,7 @@ type AuthResponse = {
 export class AppAuthService implements AuthService {
   private readonly url = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
-  async login(
-    email: string,
-    password: string
-  ): Promise<{ accessToken: string; user: User }> {
+  async login(email: string, password: string): Promise<{ accessToken: string; user: User }> {
     const response = await fetch(this.url, {
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -40,7 +37,7 @@ export class AppAuthService implements AuthService {
     name: string,
     email: string,
     password: string,
-    passwordConfirmation: string
+    passwordConfirmation: string,
   ): Promise<{ accessToken: string; user: User }> {
     const response = await fetch(`${this.url}/register`, {
       headers: { "Content-Type": "application/json" },
