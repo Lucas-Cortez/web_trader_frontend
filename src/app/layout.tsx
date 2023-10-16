@@ -11,19 +11,9 @@ export const metadata: Metadata = {
   description: "Plataforma de auto-trading",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <head>
-        <script
-          src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"
-          async
-        />
-      </head>
       <body className={`${inter.className}`}>
         <NextAuthProvider>{children}</NextAuthProvider>
         <Toaster />

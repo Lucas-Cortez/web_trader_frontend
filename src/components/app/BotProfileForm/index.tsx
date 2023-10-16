@@ -15,18 +15,11 @@ import {
 import { CheckboxCardInput } from "../CheckboxCardInput";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { handleWS } from "@/stores";
 import { useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { profileBotService } from "@/services";
 import { getSession } from "next-auth/react";
-// import {
-//   Tooltip,
-//   TooltipContent,
-//   TooltipProvider,
-//   TooltipTrigger,
-// } from "@/components/ui/tooltip";
+import { useTrade } from "@/hooks/useTrade";
 
 const createBotProfileSchema = z.object({
   name: z.string(),
@@ -42,7 +35,7 @@ const createBotProfileSchema = z.object({
         tag: z.string(),
         title: z.string(),
         description: z.string(),
-      })
+      }),
     )
     .refine((v) => v.some((s) => s.checked), {
       message: "Deve selecionar pelo menos uma estratégia",
@@ -56,7 +49,6 @@ type Strategy = {
   tag: string;
   name: string;
   title: string;
-
   description: string;
 };
 
@@ -83,11 +75,11 @@ async function getStrategies(): Promise<Strategy[]> {
   return STRATEGIES;
 }
 
-export const BotProfileForm: React.FC = () => {
-  const { handleSubmit, control, register, watch } =
-    useForm<createBotProfileValues>({
-      resolver: zodResolver(createBotProfileSchema),
-    });
+export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSubmitAction }) => {
+  const { addStockAnalysis } = useTrade();
+  const { handleSubmit, control, register } = useForm<createBotProfileValues>({
+    resolver: zodResolver(createBotProfileSchema),
+  });
 
   const onSubmit = handleSubmit(
     async (formData) => {
@@ -95,21 +87,20 @@ export const BotProfileForm: React.FC = () => {
       const session = await getSession();
       console.log(formData);
 
-      const response = await profileBotService.create(
+      await addStockAnalysis({
         name,
         interval,
         symbol,
         quantity,
-        strategies.filter((v) => v.checked).map((v) => v.id),
-        session?.accessToken || ""
-      );
-      console.log(response);
+        strategiesIds: strategies.filter((v) => v.checked).map((v) => v.id),
+        accessToken: session?.accessToken || "",
+      });
 
-      // handleWS();
+      onSubmitAction();
     },
     (error) => {
       console.log(error);
-    }
+    },
   );
 
   const { fields: strategies, append } = useFieldArray({
@@ -120,10 +111,7 @@ export const BotProfileForm: React.FC = () => {
   useEffect(() => {
     (async () => {
       const data = await getStrategies();
-
-      data.forEach((s) => {
-        append({ checked: false, ...s });
-      });
+      data.forEach((s) => append({ checked: false, ...s }));
     })();
   }, [append]);
 
@@ -132,9 +120,7 @@ export const BotProfileForm: React.FC = () => {
       <div>
         <Label>
           Apelido{" "}
-          <span className="text-xs text-gray-400">
-            (Nome para melhor identificação do seu gráfico)
-          </span>
+          <span className="text-xs text-gray-400">(Nome para melhor identificação do seu gráfico)</span>
         </Label>
         <Input type="text" {...register("name")} />
       </div>
@@ -176,6 +162,7 @@ export const BotProfileForm: React.FC = () => {
 
                 <SelectContent>
                   <SelectGroup>
+                    <SelectItem value="1s">1 segundo</SelectItem>
                     <SelectItem value="1m">1 minuto</SelectItem>
                     <SelectItem value="5m">5 minutos</SelectItem>
                   </SelectGroup>
@@ -188,10 +175,7 @@ export const BotProfileForm: React.FC = () => {
 
       <div>
         <Label>
-          Valor{" "}
-          <span className="text-xs text-gray-400">
-            (Montante a ser negociado a cada transação)
-          </span>
+          Valor <span className="text-xs text-gray-400">(Montante a ser negociado a cada transação)</span>
         </Label>
         <Input type="number" step="0.01" {...register("quantity")} />
       </div>

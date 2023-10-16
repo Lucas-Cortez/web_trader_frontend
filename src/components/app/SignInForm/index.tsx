@@ -11,6 +11,8 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const signInSchema = z.object({
   email: z.string().email("E-mail é necessário"),
@@ -20,6 +22,7 @@ const signInSchema = z.object({
 type SignInValues = z.infer<typeof signInSchema>;
 
 export const SignInForm: React.FC = () => {
+  const [viewPassword, setViewPassword] = useState<boolean>(false);
   const router = useRouter();
   const { toast } = useToast();
   const {
@@ -58,16 +61,20 @@ export const SignInForm: React.FC = () => {
 
       <div>
         <Label htmlFor="password">Senha</Label>
-        <Input type="password" {...register("password")} />
+        <div className="relative">
+          <Input type={viewPassword ? "text" : "password"} {...register("password")} />
+          <div
+            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400"
+            onClick={() => setViewPassword((prev) => !prev)}
+          >
+            {viewPassword ? <Eye /> : <EyeOff />}
+          </div>
+        </div>
         <InputErrorMessage error={errors.password} />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          "Entrar"
-        )}
+        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Entrar"}
       </Button>
     </form>
   );

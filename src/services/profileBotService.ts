@@ -9,4 +9,6 @@ export interface ProfileBotService {
     strategiesIds: string[],
     accessToken: string,
   ): Promise<Profile>;
+
+  get(accessToken: string): Promise<Profile[]>;
 }
