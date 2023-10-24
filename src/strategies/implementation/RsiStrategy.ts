@@ -1,28 +1,27 @@
 import { RSI } from "technicalindicators";
-import { AnalysisStrategy, StrategyInput } from "../AnalysisStrategy";
+import { AnalysisStrategy, StrategyInput, StrategyOutput } from "../AnalysisStrategy";
 
 const PERIOD = 14;
 const OVERBOUGHT = 70;
 const OVERSOLD = 30;
 
-export class RsiStrategy implements AnalysisStrategy {
+export class RsiStrategy extends AnalysisStrategy {
   public tag = "relative_strength_index";
-  private lastRsi?: number;
 
-  setAndExecuteAnalysis(input: StrategyInput): void {
+  executeAnalysis(input: StrategyInput): StrategyOutput {
     const data = RSI.calculate({ values: input.values, period: PERIOD });
-    this.lastRsi = data[data.length - 1];
+    const lastRsi = data[data.length - 1];
+
+    const decision = { buy: this.buy(lastRsi), sell: this.buy(lastRsi) };
+
+    return decision;
   }
 
-  itsTimeToBuy(): boolean {
-    if (!this.lastRsi) throw new Error("missing_analysis_data", { cause: "[RsiStrategy]: itsTimeToBuy" });
-
-    return this.lastRsi < OVERSOLD;
+  protected buy(lastRsi: number): boolean {
+    return lastRsi < OVERSOLD;
   }
 
-  itsTimeToSell(): boolean {
-    if (!this.lastRsi) throw new Error("missing_analysis_data", { cause: "[RsiStrategy]: itsTimeToSell" });
-
-    return this.lastRsi > OVERBOUGHT;
+  protected sell(lastRsi: number): boolean {
+    return lastRsi > OVERBOUGHT;
   }
 }

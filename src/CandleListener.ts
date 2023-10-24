@@ -1,10 +1,9 @@
+type Callback<T> = (data: MessageEvent<T>["data"]) => void;
+
 export class CandleListener<T = any> {
   private readonly candleChannel: WebSocket;
 
-  constructor(
-    coin: { symbol: string; interval: string },
-    messageCallback: (data: MessageEvent<T>["data"]) => void,
-  ) {
+  constructor(coin: { symbol: string; interval: string }, messageCallback: Callback<T>) {
     this.candleChannel = new WebSocket(
       `${process.env.NEXT_PUBLIC_BROKER_WEBSOCKET_URL}/${coin.symbol.toLowerCase()}@kline_${coin.interval}`,
     );
@@ -12,7 +11,7 @@ export class CandleListener<T = any> {
     this.setMessageCallback(messageCallback);
   }
 
-  setMessageCallback(messageCallback: (data: MessageEvent<T>["data"]) => void) {
+  setMessageCallback(messageCallback: Callback<T>) {
     this.candleChannel.onmessage = (event) => {
       messageCallback(JSON.parse(event.data));
     };

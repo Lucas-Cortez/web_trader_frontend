@@ -2,30 +2,38 @@ import { TradeStore } from "./types";
 import { Candle } from "@/entities/candle";
 import { createStoreWithMiddleware } from "../createStoreWithMiddleware";
 import { CandleListener } from "@/CandleListener";
+import { StateCreator } from "zustand";
+import { Profile } from "@/entities/profile";
 
-export const useTradeStore = createStoreWithMiddleware<TradeStore>((set) => ({
-  tradeCandles: {},
+const tradeStore: StateCreator<TradeStore, [], []> = (set) => ({
+  tradeProfiles: {},
 
-  addCandleData: (id: string, data: Candle[], listener: CandleListener) =>
-    set((state) => ({ tradeCandles: { ...state.tradeCandles, [id]: { data, listener } } })),
+  addCandleData: (profile: Profile, data: Candle[], listener: CandleListener) =>
+    set((state) => ({
+      tradeProfiles: { ...state.tradeProfiles, [profile.id]: { ...profile, data, listener } },
+    })),
 
   removeCandleData: (id: string) =>
     set((state) => {
-      state.tradeCandles[id].listener.closeChannel();
-      delete state.tradeCandles[id];
-      return { tradeCandles: { ...state.tradeCandles } };
+      state.tradeProfiles[id].listener.closeChannel();
+      delete state.tradeProfiles[id];
+      return { tradeProfiles: { ...state.tradeProfiles } };
     }),
 
   updateLastData: (id: string, data: Candle) =>
     set((state) => {
-      state.tradeCandles[id].data.shift();
-      state.tradeCandles[id].data.push(data);
-      return { tradeCandles: state.tradeCandles };
+      const newProfile = state.tradeProfiles[id];
+      newProfile.data = newProfile.data.slice(1);
+      newProfile.data.push(data);
+
+      return { tradeProfiles: { ...state.tradeProfiles, [id]: newProfile } };
     }),
 
   reset: () =>
     set((state) => {
-      Object.keys(state.tradeCandles).forEach((v) => state.tradeCandles[v].listener.closeChannel());
-      return { tradeCandles: {} };
+      Object.keys(state.tradeProfiles).forEach((v) => state.tradeProfiles[v].listener.closeChannel());
+      return { tradeProfiles: {} };
     }),
-}));
+});
+
+export const useTradeStore = createStoreWithMiddleware(tradeStore);

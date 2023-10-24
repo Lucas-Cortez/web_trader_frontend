@@ -6,6 +6,11 @@ import { binanceCandleWebsocketAdapter } from "@/utils/candleAdapter";
 import { CandleListener } from "@/CandleListener";
 import { getSession } from "next-auth/react";
 import { useCallback, useState } from "react";
+import { Profile } from "@/entities/profile";
+import { strategiesOrchestrator } from "@/StrategiesOrchestrator";
+import { useStrategyStore } from "@/stores/useStrategyStore";
+import { useToast } from "@/components/ui/use-toast";
+import { Trade } from "@/enums/trade";
 
 type ProfileData = {
   name: string;
@@ -22,6 +27,76 @@ export const useTrade = () => {
   const removeCandleData = useTradeStore((state) => state.removeCandleData);
   const updateLastData = useTradeStore((state) => state.updateLastData);
   const reset = useTradeStore((state) => state.reset);
+  const strategies = useStrategyStore((state) => state.strategies);
+  const { toast } = useToast();
+
+  const getStrategiesTags = useCallback(
+    (strategiesIds: string[]) => {
+      const tags: string[] = [];
+
+      strategiesIds.forEach((strategyId) => {
+        const strategy = strategies.find((v) => v.id === strategyId);
+
+        if (strategy) tags.push(strategy.tag);
+      });
+
+      return tags;
+    },
+    [strategies],
+  );
+
+  const processOrder = async (profileId: string, decision: Trade) => {
+    const tradeProfile = useTradeStore.getState().tradeProfiles[profileId];
+
+    const inPosition = tradeProfile.inPosition as boolean;
+
+    if (inPosition && decision === Trade.SELL) console.log("ORDEM DE VENDA");
+
+    if (!inPosition && decision === Trade.BUY) console.log("ORDEM DE COMPRA");
+  };
+
+  const generateCallback = useCallback(
+    (profile: Profile) => (data: any) => {
+      const candle = binanceCandleWebsocketAdapter.convert(data);
+
+      if (!candle.closed) return;
+
+      const candles = useTradeStore.getState().tradeProfiles[profile.id].data;
+
+      updateLastData(profile.id, candle);
+
+      candles.push(candle);
+
+      const tags = getStrategiesTags(profile.strategiesIds);
+
+      const decision = strategiesOrchestrator.analize(
+        tags,
+        candles.map((c) => Number(c.closePrice)),
+      );
+
+      console.log({ tags, decision });
+
+      if (!decision) return;
+
+      processOrder(profile.id, decision);
+
+      toast({ description: decision });
+    },
+    [getStrategiesTags, toast, updateLastData],
+  );
+
+  const handleCandleData = useCallback(
+    async (profile: Profile) => {
+      const candleData = await brokerService.getCandleData(profile.symbol, profile.interval);
+
+      const callback = generateCallback(profile);
+
+      const listener = new CandleListener({ interval: profile.interval, symbol: profile.symbol }, callback);
+
+      addCandleData(profile, candleData, listener);
+    },
+    [addCandleData, generateCallback],
+  );
 
   const initializeTrades = useCallback(async () => {
     if (loaded) return;
@@ -34,23 +109,14 @@ export const useTrade = () => {
 
     for (const profile of profiles) {
       try {
-        const { interval, symbol } = profile;
-
-        const candleData = await brokerService.getCandleData(symbol, interval);
-
-        const callback = (data: any) => {
-          const candle = binanceCandleWebsocketAdapter.convert(data);
-          updateLastData(profile.id, candle);
-        };
-
-        addCandleData(profile.id, candleData, new CandleListener({ interval, symbol }, callback));
+        await handleCandleData(profile);
       } catch (error) {
         console.log("[ERROR](initializeTrades): ", error);
       } finally {
         setLoaded(true);
       }
     }
-  }, [addCandleData, loaded, updateLastData]);
+  }, [handleCandleData, loaded]);
 
   const addStockAnalysis = useCallback(
     async (profileData: ProfileData) => {
@@ -66,19 +132,12 @@ export const useTrade = () => {
           accessToken,
         );
 
-        const candleData = await brokerService.getCandleData(symbol, interval);
-
-        const callback = (data: any) => {
-          const candle = binanceCandleWebsocketAdapter.convert(data);
-          updateLastData(profile.id, candle);
-        };
-
-        addCandleData(profile.id, candleData, new CandleListener({ interval, symbol }, callback));
+        await handleCandleData(profile);
       } catch (error) {
         console.log("[ERROR](addStockAnalysis): ", error);
       }
     },
-    [addCandleData, updateLastData],
+    [handleCandleData],
   );
 
   const deleteStockAnalysis = async (id: string) => removeCandleData(id);

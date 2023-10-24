@@ -4,19 +4,23 @@ import { useTradeStore } from "@/stores/useTradeStore";
 
 type ChartProps = {
   profileId: string;
+  // data: Candle[];
+  // name: string;
 };
 
 export const Chart: React.FC<ChartProps> = ({ profileId }) => {
-  // const chartData = useTradeStore((state) => state.tradeCandles);
-  const chartData = useTradeStore((state) => state.tradeCandles[profileId].data);
-  // console.log(profileId);
+  const chartData = useTradeStore((state) => state.tradeProfiles[profileId]);
+  // console.log(data.length);
 
   return (
-    <div className="bg-gray-200 w-full h-60 border border-gray-300 rounded-lg shadow-lg flex justify-center items-center">
-      <pre className="h-[90%] w-[98%] bg-gray-400 shadow-inner shadow-gray-500 rounded-lg overflow-auto p-2 text-xs">
-        <code>{JSON.stringify(chartData, null, 2)}</code>
-        {/* <code>{JSON.stringify(chartData[profileId].data, null, 2)}</code> */}
-      </pre>
+    <div className="bg-gray-200 w-full h-60 border border-gray-300 rounded-lg shadow-lg flex flex-col items-start p-3 gap-2">
+      <h3 className="font-bold">{chartData.name}</h3>
+
+      <div className="overflow-auto w-full bg-gray-400 shadow-inner shadow-gray-500 rounded-lg p-2">
+        <pre className="text-xs">
+          <code>{JSON.stringify(chartData.data, null, 2)}</code>
+        </pre>
+      </div>
     </div>
   );
 };

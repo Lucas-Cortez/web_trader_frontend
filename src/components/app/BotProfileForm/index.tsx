@@ -20,6 +20,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getSession } from "next-auth/react";
 import { useTrade } from "@/hooks/useTrade";
+import { Loader2 } from "lucide-react";
+import { useStrategyStore } from "@/stores/useStrategyStore";
+// import { useStrategy } from "@/hooks/useStrategy";
 
 const createBotProfileSchema = z.object({
   name: z.string(),
@@ -44,40 +47,16 @@ const createBotProfileSchema = z.object({
 
 type createBotProfileValues = z.infer<typeof createBotProfileSchema>;
 
-type Strategy = {
-  id: string;
-  tag: string;
-  name: string;
-  title: string;
-  description: string;
-};
-
-const STRATEGIES: Strategy[] = [
-  {
-    id: "651a2f56ef1632834c286aeb",
-    tag: "bollinger_bands",
-    name: "Bollinger Bands",
-    title: "Bandas de Bollinger (BB)",
-    description:
-      "É uma estratégia de análise na qual são utilizadas duas bandas que se ajustam à volatilidade do mercado. A compra ocorre quando o preço atinge a banda inferior, e a venda quando o preço atinge a banda superior.",
-  },
-  {
-    id: "651a2f56ef1632834c286aec",
-    tag: "relative_strength_index",
-    name: "Relative Strength Index",
-    title: "Indíce de Força Relativa (IFR)",
-    description:
-      "É uma estratégia na qual é utilizado um indicador para identificar oportunidades de compra quando o ativo está sobrevendido (abaixo de 30) e de venda quando está sobrecomprado (acima de 70). Isso ajuda a tomar decisões de negociação com base na força e direção da tendência do mercado.",
-  },
-];
-
-async function getStrategies(): Promise<Strategy[]> {
-  return STRATEGIES;
-}
-
 export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSubmitAction }) => {
   const { addStockAnalysis } = useTrade();
-  const { handleSubmit, control, register } = useForm<createBotProfileValues>({
+  // const { strategies } = useStrategy();
+  const strategies = useStrategyStore((state) => state.strategies);
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: { isSubmitting },
+  } = useForm<createBotProfileValues>({
     resolver: zodResolver(createBotProfileSchema),
   });
 
@@ -103,17 +82,14 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
     },
   );
 
-  const { fields: strategies, append } = useFieldArray({
+  const { fields: strategiesFields, append } = useFieldArray({
     control,
     name: "strategies",
   });
 
   useEffect(() => {
-    (async () => {
-      const data = await getStrategies();
-      data.forEach((s) => append({ checked: false, ...s }));
-    })();
-  }, [append]);
+    strategies.forEach((s) => append({ checked: false, ...s }));
+  }, [append, strategies]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit}>
@@ -141,6 +117,7 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="btcbrl">BTCBRL</SelectItem>
+                    <SelectItem value="adabrl">ADABRL</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -164,7 +141,20 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
                   <SelectGroup>
                     <SelectItem value="1s">1 segundo</SelectItem>
                     <SelectItem value="1m">1 minuto</SelectItem>
+                    <SelectItem value="3m">3 minutos</SelectItem>
                     <SelectItem value="5m">5 minutos</SelectItem>
+                    <SelectItem value="15m">15 minutos</SelectItem>
+                    <SelectItem value="30m">30 minutos</SelectItem>
+                    <SelectItem value="1h">1 hora</SelectItem>
+                    <SelectItem value="2h">2 horas</SelectItem>
+                    <SelectItem value="4h">4 horas</SelectItem>
+                    <SelectItem value="6h">6 horas</SelectItem>
+                    <SelectItem value="8h">8 horas</SelectItem>
+                    <SelectItem value="12h">12 horas</SelectItem>
+                    <SelectItem value="1d">1 dia</SelectItem>
+                    <SelectItem value="3d">3 dias</SelectItem>
+                    <SelectItem value="1w">1 semana</SelectItem>
+                    <SelectItem value="1M">1 mês</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -185,7 +175,7 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
 
         <ScrollArea className="h-40 pr-3">
           <div className="flex flex-col gap-2">
-            {strategies.map((strategy, index) => {
+            {strategiesFields.map((strategy, index) => {
               return (
                 <div key={index}>
                   <Controller
@@ -208,7 +198,9 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
         </ScrollArea>
       </div>
 
-      <Button type="submit">Criar</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Criar"}
+      </Button>
     </form>
   );
 };

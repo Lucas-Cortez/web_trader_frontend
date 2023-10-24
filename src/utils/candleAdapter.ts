@@ -18,7 +18,7 @@ export class BinanceCandleAdapter implements CandleAdapter<(string | number)[]> 
 }
 
 export class BinanceCandleWebsocketAdapter implements CandleAdapter {
-  convert(data: any): Candle {
+  convert(data: any): Candle & { closed: boolean } {
     return {
       openTime: data.k.t,
       closeTime: data.k.T,
@@ -26,6 +26,7 @@ export class BinanceCandleWebsocketAdapter implements CandleAdapter {
       highPrice: data.k.h,
       lowPrice: data.k.l,
       closePrice: data.k.c,
+      closed: data.k.x,
     };
   }
 }

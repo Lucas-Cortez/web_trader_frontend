@@ -1,16 +1,12 @@
 import { BollingerBands } from "technicalindicators";
-import { AnalysisStrategy, StrategyInput } from "../AnalysisStrategy";
+import { AnalysisStrategy, StrategyInput, StrategyOutput } from "../AnalysisStrategy";
 
 const PERIOD = 20;
 
-export class BollingerBandsStrategy implements AnalysisStrategy {
+export class BollingerBandsStrategy extends AnalysisStrategy {
   public tag = "bollinger_bands";
-  private closingPrice?: number;
-  private lastBB?: { upper: number; lower: number };
 
-  setAndExecuteAnalysis(input: StrategyInput): void {
-    this.closingPrice = input.closingPrice;
-
+  executeAnalysis(input: StrategyInput): StrategyOutput {
     const data = BollingerBands.calculate({
       period: PERIOD,
       values: input.values,
@@ -19,24 +15,24 @@ export class BollingerBandsStrategy implements AnalysisStrategy {
 
     const last = data[data.length - 2];
 
-    this.lastBB = { lower: last.lower, upper: last.upper };
-  }
+    const closingPrice = input.closingPrice;
+    console.log("================================");
 
-  itsTimeToBuy(): boolean {
-    if (!this.lastBB || !this.closingPrice)
-      throw new Error("missing_analysis_data", { cause: "[BollingerBandsStrategy]: itsTimeToBuy" });
+    console.log({ last, closingPrice });
 
-    const decision = this.closingPrice < this.lastBB.upper;
+    const upper = last.upper;
+    const lower = last.lower;
 
-    return decision;
-  }
-
-  itsTimeToSell(): boolean {
-    if (!this.lastBB || !this.closingPrice)
-      throw new Error("missing_analysis_data", { cause: "[BollingerBandsStrategy]: itsTimeToSell" });
-
-    const decision = this.closingPrice > this.lastBB.lower;
+    const decision = { buy: this.buy(closingPrice, lower), sell: this.sell(closingPrice, upper) };
 
     return decision;
+  }
+
+  protected buy(closingPrice: number, lastBBLower: number): boolean {
+    return closingPrice < lastBBLower;
+  }
+
+  protected sell(closingPrice: number, lastBBUpper: number): boolean {
+    return closingPrice > lastBBUpper;
   }
 }

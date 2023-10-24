@@ -1,10 +1,13 @@
 import { Candle } from "@/entities/candle";
 import { CandleListener } from "@/CandleListener";
+import { Profile } from "@/entities/profile";
 
-type TradeState = { tradeCandles: Record<string, { data: Candle[]; listener: CandleListener }> };
+type TradeState = {
+  tradeProfiles: Record<string, Profile & { data: Candle[]; listener: CandleListener }>;
+};
 
 type TradeActions = {
-  addCandleData: (id: string, data: Candle[], listener: CandleListener) => void;
+  addCandleData: (profile: Profile, data: Candle[], listener: CandleListener) => void;
   removeCandleData: (id: string) => void;
   updateLastData: (id: string, data: Candle) => void;
   reset: () => void;
