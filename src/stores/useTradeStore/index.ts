@@ -22,11 +22,11 @@ const tradeStore: StateCreator<TradeStore, [], []> = (set) => ({
 
   updateLastData: (id: string, data: Candle) =>
     set((state) => {
-      const newProfile = state.tradeProfiles[id];
-      newProfile.data = newProfile.data.slice(1);
-      newProfile.data.push(data);
+      const profile = state.tradeProfiles[id];
+      let newData = profile.data.slice(1);
+      newData.push(data);
 
-      return { tradeProfiles: { ...state.tradeProfiles, [id]: newProfile } };
+      return { tradeProfiles: { ...state.tradeProfiles, [id]: { ...profile, data: newData } } };
     }),
 
   reset: () =>
