@@ -11,4 +11,6 @@ export interface ProfileBotService {
   ): Promise<Profile>;
 
   get(accessToken: string): Promise<Profile[]>;
+
+  delete(profileId: string, accessToken: string): Promise<string>;
 }

@@ -25,13 +25,13 @@ export class StrategiesOrchestrator {
       const strategy = this.selectStrategy(v);
       const { buy, sell } = strategy.executeAnalysis({ values: data, closingPrice: data[data.length - 1] });
 
-      console.log({ buy, sell });
+      // console.log({ buy, sell });
 
       buyValues.push(buy);
       sellValues.push(sell);
     });
 
-    console.log({ buyValues, sellValues });
+    // console.log({ buyValues, sellValues });
 
     if (buyValues.every((v) => v)) return Trade.BUY;
     if (sellValues.every((v) => v)) return Trade.SELL;

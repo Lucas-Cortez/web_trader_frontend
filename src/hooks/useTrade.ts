@@ -45,14 +45,20 @@ export const useTrade = () => {
     [strategies],
   );
 
-  // const processOrder = async (profileId: string, decision: Trade) => {
-  //   const tradeProfile = useTradeStore.getState().tradeProfiles[profileId];
+  const processOrder = async (profileId: string, decision: Trade) => {
+    const tradeProfile = useTradeStore.getState().tradeProfiles[profileId];
 
-  //   const inPosition = tradeProfile.inPosition as boolean;
+    const inPosition = tradeProfile.inPosition;
 
-  //   if (inPosition && decision === Trade.SELL) console.log("ORDEM DE VENDA");
-  //   if (!inPosition && decision === Trade.BUY) console.log("ORDEM DE COMPRA");
-  // };
+    if (inPosition && decision === Trade.SELL) {
+      console.log("ORDEM DE VENDA");
+      toast({ description: decision });
+    }
+    if (!inPosition && decision === Trade.BUY) {
+      console.log("ORDEM DE COMPRA");
+      toast({ description: decision });
+    }
+  };
 
   const generateCallback = useCallback(
     (profile: Profile) => (data: any) => {
@@ -73,15 +79,14 @@ export const useTrade = () => {
         candles.map((c) => Number(c.closePrice)),
       );
 
-      console.log({ tags, decision });
+      // console.log({ tags, decision });
 
       if (!decision) return;
 
-      // processOrder(profile.id, decision);
-
-      toast({ description: decision });
+      processOrder(profile.id, decision);
     },
-    [getStrategiesTags, toast, updateLastData],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [getStrategiesTags, updateLastData],
   );
 
   const handleCandleData = useCallback(
@@ -139,7 +144,10 @@ export const useTrade = () => {
     [handleCandleData],
   );
 
-  const deleteStockAnalysis = async (id: string) => removeCandleData(id);
+  const deleteStockAnalysis = async (profileId: string, accessToken: string) => {
+    await profileBotService.delete(profileId, accessToken);
+    removeCandleData(profileId);
+  };
 
   const finishTrades = () => reset();
 

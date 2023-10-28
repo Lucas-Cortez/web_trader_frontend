@@ -6,7 +6,7 @@ const nextConfig = {
       {
         source: "/",
         destination: "/painel",
-        permanent: true,
+        permanent: false,
       },
     ];
   },

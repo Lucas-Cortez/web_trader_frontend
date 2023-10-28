@@ -32,4 +32,38 @@ Fluxo da analise dos dados (Usuário cria um novo perfil):
 - [x] Fazer requisição para coletar os novos dados para analise (1000 dados)
 - [x] Conectar com o websocket para ler os dados que chegarem
 - [x] A cada novo dado, é feita uma analise
-- [ ] A partir da analise é tomada uma decisão de compra ou venda
+- [x] A partir da analise é tomada uma decisão de compra ou venda
+
+## Tarefas
+
+- [ ] Registrar a chave de api no banco de dados
+
+  - colocar campo na tabela de usuarios de (binance-api-key)
+  - fazer rota na qual insere a chave
+  - fazer rota na qual exclui a chave (?)
+  - fazer rota na qual atualiza
+
+- [ ] Inserir biblioteca de gráfico para a visualização dos dados
+
+- [x] Excluir perfil de robo
+
+  - Fazer rota na qual exclui o perfil do robo a partir do id
+  - Fazer botão no frontend no qual exclui
+
+- [ ] Atualizar informações do usuario (Nome, senha)
+
+  - Fazer rota PUT na qual atualiza as informações do usuário
+  - Fazer formulário no frontend com nome, redefinir senha
+
+- [ ] Processamento da ordem
+
+  - Rota para processamento da ordem
+  - usecase para inserir na fila de ordens
+  - usecase para processar a ordem no broker, atualizar a versão do usuário e inserir na tabela de histórico de ordens
+
+- [ ] Historico de ordens com paginação
+
+  - criar tabela de historico de ordens
+  - criar rota que retorna historico de ordens
+
+- [ ] Esqueceu a senha(????)
