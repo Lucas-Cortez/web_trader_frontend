@@ -1,5 +1,6 @@
 import { User } from "@/entities/user";
 import { AuthService } from "../authService";
+import { UserWithKey } from "@/entities/userWithKey";
 
 type AuthResponse = {
   accessToken: string;
@@ -7,13 +8,14 @@ type AuthResponse = {
     id: string;
     name: string;
     email: string;
+    hasKey: boolean;
   };
 };
 
 export class AppAuthService implements AuthService {
   private readonly url = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
-  async login(email: string, password: string): Promise<{ accessToken: string; user: User }> {
+  async login(email: string, password: string): Promise<{ accessToken: string; user: UserWithKey }> {
     const response = await fetch(this.url, {
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -29,7 +31,7 @@ export class AppAuthService implements AuthService {
 
     return {
       accessToken: data.accessToken,
-      user: new User(user.id, user.name, user.email),
+      user: { id: user.id, name: user.name, email: user.email, hasKey: user.hasKey },
     };
   }
 
@@ -38,7 +40,7 @@ export class AppAuthService implements AuthService {
     email: string,
     password: string,
     passwordConfirmation: string,
-  ): Promise<{ accessToken: string; user: User }> {
+  ): Promise<{ accessToken: string; user: UserWithKey }> {
     const response = await fetch(`${this.url}/register`, {
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -54,7 +56,7 @@ export class AppAuthService implements AuthService {
 
     return {
       accessToken: data.accessToken,
-      user: new User(user.id, user.name, user.email),
+      user: { id: user.id, name: user.name, email: user.email, hasKey: user.hasKey },
     };
   }
 }

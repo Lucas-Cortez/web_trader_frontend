@@ -24,9 +24,9 @@
 
 ---
 
-## Organizações Internas
+# Organizações Internas
 
-Fluxo da analise dos dados (Usuário cria um novo perfil):
+## Fluxo da analise dos dados (Usuário cria um novo perfil):
 
 - [x] Fazer requisição para o backend salvando os dados do novo perfil do robo
 - [x] Fazer requisição para coletar os novos dados para analise (1000 dados)
@@ -34,26 +34,20 @@ Fluxo da analise dos dados (Usuário cria um novo perfil):
 - [x] A cada novo dado, é feita uma analise
 - [x] A partir da analise é tomada uma decisão de compra ou venda
 
-## Tarefas
+## Outros Fluxos
 
 - [ ] Registrar a chave de api no banco de dados
 
-  - colocar campo na tabela de usuarios de (binance-api-key)
-  - fazer rota na qual insere a chave
-  - fazer rota na qual exclui a chave (?)
-  - fazer rota na qual atualiza
-
-- [ ] Inserir biblioteca de gráfico para a visualização dos dados
+  - colocar campo na tabela de usuarios de (binance-api-key)✅
+  - fazer rota na qual insere a chave✅
+  - fazer rota na qual exclui a chave (?)✅
+  - fazer verificação se possui chave de api antes de criar um robo
+  - fazer verificação se possui robos antes de excluir a chave de api
 
 - [x] Excluir perfil de robo
 
-  - Fazer rota na qual exclui o perfil do robo a partir do id
-  - Fazer botão no frontend no qual exclui
-
-- [ ] Atualizar informações do usuario (Nome, senha)
-
-  - Fazer rota PUT na qual atualiza as informações do usuário
-  - Fazer formulário no frontend com nome, redefinir senha
+  - Fazer rota na qual exclui o perfil do robo a partir do id✅
+  - Fazer botão no frontend no qual exclui✅
 
 - [ ] Processamento da ordem
 
@@ -63,7 +57,20 @@ Fluxo da analise dos dados (Usuário cria um novo perfil):
 
 - [ ] Historico de ordens com paginação
 
-  - criar tabela de historico de ordens
-  - criar rota que retorna historico de ordens
+  - criar tabela de historico de ordens✅
+  - criar rota que retorna historico de ordens✅
+  - criar paginação das ordens
+  - criar paginação das ordens no front
+
+- [ ] Atualizar informações do usuario (Nome, senha)
+
+  - Fazer rota PUT na qual atualiza as informações do usuário
+  - Fazer formulário no frontend com nome, redefinir senha✅
+
+- [ ] Stop Loss, Stop Gain
+
+- [ ] Inserir biblioteca de gráfico para a visualização dos dados
+
+- [ ] Adição de informações sobre a carteira do usuário
 
 - [ ] Esqueceu a senha(????)

@@ -1,12 +1,12 @@
-import { User } from "@/entities/user";
+import { UserWithKey } from "@/entities/userWithKey";
 
 export interface AuthService {
-  login(email: string, password: string): Promise<{ accessToken: string; user: User }>;
+  login(email: string, password: string): Promise<{ accessToken: string; user: UserWithKey }>;
 
   register(
     name: string,
     email: string,
     password: string,
     passwordConfirmation: string,
-  ): Promise<{ accessToken: string; user: User }>;
+  ): Promise<{ accessToken: string; user: UserWithKey }>;
 }

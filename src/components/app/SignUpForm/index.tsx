@@ -20,10 +20,10 @@ const signUpSchema = z
     password: z.string().min(8, "Mínimo de 8 caracteres"),
     passwordConfirmation: z.string().min(1, "Confirmar a senha é necessário"),
   })
-  .refine(
-    ({ password, passwordConfirmation }) => password === passwordConfirmation,
-    { path: ["passwordConfirmation"], message: "Senhas são diferentes" }
-  );
+  .refine(({ password, passwordConfirmation }) => password === passwordConfirmation, {
+    path: ["passwordConfirmation"],
+    message: "Senhas são diferentes",
+  });
 
 type SignUpValues = z.infer<typeof signUpSchema>;
 
@@ -57,7 +57,9 @@ export const SignUpForm: React.FC = () => {
         });
 
       if (response?.ok) return router.push(`/painel`);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   return (
@@ -100,11 +102,7 @@ export const SignUpForm: React.FC = () => {
         </div>
 
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            "Cadastrar"
-          )}
+          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Cadastrar"}
         </Button>
       </form>
     </>

@@ -24,7 +24,7 @@ export const Chart: React.FC<ChartProps> = ({ profileId }) => {
 
   return (
     <div className="bg-gray-200 w-full h-60 border border-gray-300 rounded-lg shadow-lg flex flex-col items-start p-3 gap-2">
-      <div className="flex justify-between w-full">
+      <div className="flex justify-between w-full items-center">
         <h3 className="font-bold">{profile.name}</h3>
         <ChartMenu profile={profile} />
       </div>
