@@ -25,6 +25,7 @@ export class MockBrokerService implements BrokerService {
     //     closePrice: "1",
     //   },
     // ];
+    // return candleData;
     const candleData = fakeCandleData;
     await sleep(1000);
     return candleData.map((candle) => this.candleAdapter.convert(candle));

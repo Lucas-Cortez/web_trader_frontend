@@ -2,16 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { apiKeyService } from "@/services";
-import { Loader2 } from "lucide-react";
+import { useTradeStore } from "@/stores/useTradeStore";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 export const ApiKeyForm: React.FC = () => {
   const { data, update } = useSession();
   const [key, setKey] = useState<string>("");
   const [loadingSave, setLoadingSave] = useState<boolean>(false);
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
+  const tradeCandlesIds = useTradeStore(useShallow((state) => Object.keys(state.tradeProfiles)));
+  const { toast } = useToast();
+  const router = useRouter();
 
   if (!data) return null;
 
@@ -25,6 +33,19 @@ export const ApiKeyForm: React.FC = () => {
   };
 
   const handleDelete = async () => {
+    if (!!tradeCandlesIds.length)
+      return toast({
+        description: "É necessário que nenhum robô esteja utilizando esta chave",
+        variant: "destructive",
+        action: (
+          <ToastAction altText="registry" onClick={() => router.push("/painel")}>
+            <div className="flex items-center">
+              Painel <ArrowRightIcon size={16} className="ml-2" />
+            </div>
+          </ToastAction>
+        ),
+      });
+
     setLoadingDelete((prev) => !prev);
     await apiKeyService.delete(data.accessToken);
     await update({ hasKey: false });
@@ -32,9 +53,9 @@ export const ApiKeyForm: React.FC = () => {
   };
 
   return (
-    <form className="flex flex-col items-center gap-4 bg-gray-50 shadow-lg p-3 rounded-lg w-full">
+    <form className="flex flex-col items-center gap-4 backdrop-blur-sm shadow-lg p-3 rounded-lg w-full">
       <div className="flex flex-col self-start w-full sm:w-3/5">
-        <p className="text-lg text-gray-600 mb-4 border-b border-b-gray-400 font-semibold">Chave de API</p>
+        <p className="text-lg text-black mb-4 border-b border-b-black font-semibold">Chave de API</p>
         <Input
           type="password"
           id="key"

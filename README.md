@@ -36,13 +36,13 @@
 
 ## Outros Fluxos
 
-- [ ] Registrar a chave de api no banco de dados
+- [x] Registrar a chave de api no banco de dados
 
   - colocar campo na tabela de usuarios de (binance-api-key)✅
   - fazer rota na qual insere a chave✅
   - fazer rota na qual exclui a chave (?)✅
-  - fazer verificação se possui chave de api antes de criar um robo
-  - fazer verificação se possui robos antes de excluir a chave de api
+  - fazer verificação se possui chave de api antes de criar um robo✅
+  - fazer verificação se possui robos antes de excluir a chave de api✅
 
 - [x] Excluir perfil de robo
 
@@ -57,7 +57,7 @@
 
 - [ ] Historico de ordens com paginação
 
-  - criar tabela de historico de ordens✅
+  - criar tabela no banco de historico de ordens✅
   - criar rota que retorna historico de ordens✅
   - criar paginação das ordens
   - criar paginação das ordens no front
@@ -69,7 +69,7 @@
 
 - [ ] Stop Loss, Stop Gain
 
-- [ ] Inserir biblioteca de gráfico para a visualização dos dados
+- [x] Inserir biblioteca de gráfico para a visualização dos dados✅
 
 - [ ] Adição de informações sobre a carteira do usuário
 

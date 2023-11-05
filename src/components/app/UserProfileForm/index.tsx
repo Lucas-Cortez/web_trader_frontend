@@ -11,10 +11,10 @@ export const UserProfileForm: React.FC = () => {
   if (!data) return null;
 
   return (
-    <div className="bg-gray-50 shadow-lg p-3 rounded-lg w-full flex flex-col justify-between gap-4">
+    <div className="backdrop-blur-sm shadow-lg p-3 rounded-lg w-full flex flex-col justify-between gap-4">
       <div className="self-start w-full sm:w-3/5">
         <fieldset className="mb-6">
-          <p className="text-lg text-gray-600 mb-4 border-b border-b-gray-400 font-semibold">Perfil</p>
+          <p className="text-lg text-black mb-4 border-b border-b-black font-semibold">Perfil</p>
 
           <div className="flex flex-col gap-2">
             <div>
@@ -29,7 +29,7 @@ export const UserProfileForm: React.FC = () => {
         </fieldset>
 
         <fieldset>
-          <p className="text-lg text-gray-600 mb-4 border-b border-b-gray-400 font-semibold">
+          <p className="text-lg text-black mb-4 border-b border-b-black font-semibold">
             Redefinição de senha
           </p>
 

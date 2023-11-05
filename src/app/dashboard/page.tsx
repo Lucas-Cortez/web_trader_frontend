@@ -1,6 +1,7 @@
 import { ChartsSection } from "@/components/app/ChartsSection";
 import { Container } from "@/components/app/Container";
 import { CreateAnalysisModal } from "@/components/app/CreateAnalysisModal";
+import { StopsForm } from "@/components/app/StopsForm";
 
 export default function DashboardPage() {
   return (
@@ -9,7 +10,10 @@ export default function DashboardPage() {
         <div className="flex justify-between">
           <h1 className="text-2xl font-medium">Análises</h1>
 
-          <CreateAnalysisModal />
+          <div className="flex gap-2">
+            <StopsForm />
+            <CreateAnalysisModal />
+          </div>
         </div>
 
         <div className="flex justify-between">
