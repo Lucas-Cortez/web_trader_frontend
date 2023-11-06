@@ -22,47 +22,58 @@ import { getSession } from "next-auth/react";
 import { useTrade } from "@/hooks/useTrade";
 import { Loader2 } from "lucide-react";
 import { useStrategyStore } from "@/stores/useStrategyStore";
+import { Switch } from "@/components/ui/switch";
 // import { useStrategy } from "@/hooks/useStrategy";
 
-const createBotProfileSchema = z.object({
-  name: z.string(),
-  interval: z.string(),
-  symbol: z.string(),
-  quantity: z.coerce.number().positive(),
-  // strategiesIds: z.array(z.string().nonempty("must be an id")).nonempty("must contain strategies ids"),
-  strategies: z
-    .array(
-      z.object({
-        checked: z.boolean(),
-        id: z.string(),
-        tag: z.string(),
-        title: z.string(),
-        description: z.string(),
+const createBotProfileSchema = z
+  .object({
+    name: z.string().min(1),
+    interval: z.string(),
+    symbol: z.string(),
+    quantity: z.coerce.number().positive(),
+    // strategiesIds: z.array(z.string().nonempty("must be an id")).nonempty("must contain strategies ids"),
+    strategies: z
+      .array(
+        z.object({
+          checked: z.boolean(),
+          id: z.string(),
+          tag: z.string(),
+          title: z.string(),
+          description: z.string(),
+        }),
+      )
+      .refine((v) => v.some((s) => s.checked), {
+        message: "Deve selecionar pelo menos uma estratégia",
       }),
-    )
-    .refine((v) => v.some((s) => s.checked), {
-      message: "Deve selecionar pelo menos uma estratégia",
-    }),
-});
+    stopLoss: z.coerce.number().min(0).max(100).default(0),
+    // stopWin: z.coerce.number().positive().max(100).default(0),
+    stopEnable: z.boolean().default(false),
+  })
+  .refine((v) => !(v.stopEnable && v.stopLoss === 0), {
+    message: "Deve ser maior que zero",
+    path: ["stopLoss"],
+  });
 
 type createBotProfileValues = z.infer<typeof createBotProfileSchema>;
 
 export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSubmitAction }) => {
   const { addStockAnalysis } = useTrade();
-  // const { strategies } = useStrategy();
   const strategies = useStrategyStore((state) => state.strategies);
   const {
     handleSubmit,
     control,
     register,
     formState: { isSubmitting },
+    watch,
   } = useForm<createBotProfileValues>({
     resolver: zodResolver(createBotProfileSchema),
   });
 
+  const stopEnable = watch("stopEnable");
+
   const onSubmit = handleSubmit(
     async (formData) => {
-      const { name, interval, quantity, symbol, strategies } = formData;
+      const { name, interval, quantity, symbol, strategies, stopEnable, stopLoss } = formData;
       const session = await getSession();
       console.log(formData);
 
@@ -71,6 +82,8 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
         interval,
         symbol,
         quantity,
+        stopEnable,
+        stopLoss,
         strategiesIds: strategies.filter((v) => v.checked).map((v) => v.id),
         accessToken: session?.accessToken || "",
       });
@@ -165,15 +178,46 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
 
       <div>
         <Label>
-          Valor <span className="text-xs text-gray-400">(Montante a ser negociado a cada transação)</span>
+          Valor{" "}
+          <span className="text-xs text-gray-400">(Montante da moeda a ser negociado a cada transação)</span>
         </Label>
         <Input type="number" step="0.01" {...register("quantity")} />
       </div>
 
       <div>
+        <Label className={stopEnable ? "" : "opacity-50"}>
+          Parar perda <span className="text-xs text-gray-400">(Stop loss %)</span>
+        </Label>
+
+        <div className="flex w-full gap-4 ">
+          <div className={`relative w-1/2 ${stopEnable ? "" : "opacity-50"}`}>
+            <Input
+              type="number"
+              step="any"
+              defaultValue={0}
+              disabled={!stopEnable}
+              {...register("stopLoss")}
+            />
+            <span className="absolute right-8 top-1/2 -translate-y-1/2">%</span>
+          </div>
+
+          <Controller
+            control={control}
+            name="stopEnable"
+            render={({ field }) => (
+              <div className="flex items-center gap-2">
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                <Label>Ativado</Label>
+              </div>
+            )}
+          />
+        </div>
+      </div>
+
+      <div>
         <Label>Selecione as suas estratégias</Label>
 
-        <ScrollArea className="h-40 pr-3">
+        <ScrollArea className="h-48 pr-3">
           <div className="flex flex-col gap-2">
             {strategiesFields.map((strategy, index) => {
               return (

@@ -10,18 +10,19 @@ export default function DashboardPage() {
         <div className="flex justify-between">
           <h1 className="text-2xl font-medium">Análises</h1>
 
-          <div className="flex gap-2">
+          <CreateAnalysisModal />
+          {/* <div className="flex gap-2">
             <StopsForm />
             <CreateAnalysisModal />
-          </div>
+          </div> */}
         </div>
 
-        <div className="flex justify-between">
+        {/* <div className="flex justify-between">
           <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
           <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
           <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
           <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
-        </div>
+        </div> */}
 
         <ChartsSection />
       </Container>

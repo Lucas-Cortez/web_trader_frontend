@@ -10,13 +10,7 @@ export default function TestPage() {
 
   return (
     <div>
-      <button
-        onClick={() => {
-          // addStockAnalysis("btcbrl", "1s");
-        }}
-      >
-        click
-      </button>
+      <button onClick={() => {}}>click</button>
     </div>
   );
 }

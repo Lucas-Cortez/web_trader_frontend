@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,14 +8,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-import { Profile } from "@/entities/profile";
+// import { Profile } from "@/entities/profile";
 import { useTrade } from "@/hooks/useTrade";
 import { MoreVertical, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-type ChartMenuProps = { profile: Profile };
+type ChartMenuProps = { profileId: string };
 
-export const ChartMenu: React.FC<ChartMenuProps> = ({ profile }) => {
+export const ChartMenu: React.FC<ChartMenuProps> = ({ profileId }) => {
   const { deleteStockAnalysis } = useTrade();
   const { data } = useSession();
 
@@ -29,7 +31,7 @@ export const ChartMenu: React.FC<ChartMenuProps> = ({ profile }) => {
         <DropdownMenuItem
           className="flex items-center cursor-pointer"
           onClick={() => {
-            deleteStockAnalysis(profile.id, data?.accessToken || "");
+            deleteStockAnalysis(profileId, data?.accessToken || "");
           }}
         >
           <Trash2 className="mr-2 h-4 w-4" />

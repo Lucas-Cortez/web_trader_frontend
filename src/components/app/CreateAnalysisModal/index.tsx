@@ -18,12 +18,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BotProfileForm } from "../BotProfileForm";
+import { useTradeStore } from "@/stores/useTradeStore";
+import { useShallow } from "zustand/react/shallow";
 
 export const CreateAnalysisModal: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const router = useRouter();
   const { data } = useSession();
   const { toast } = useToast();
+  const tradeProfilesIds = useTradeStore(useShallow((state) => Object.keys(state.tradeProfiles)));
 
   const verifyIfCanOpen = (v: boolean) => {
     if (!!data?.user.hasKey) setOpen(v);
@@ -44,10 +47,10 @@ export const CreateAnalysisModal: React.FC = () => {
   return (
     <Dialog open={open} onOpenChange={verifyIfCanOpen}>
       <DialogTrigger asChild>
-        <Button>Criar análise</Button>
+        <Button disabled={tradeProfilesIds.length >= 3}>Criar análise</Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-full h-screen sm:h-auto sm:max-w-[425px] overflow-auto">
         <DialogHeader>
           <DialogTitle>Criando perfil para análise do robô</DialogTitle>
           <DialogDescription>

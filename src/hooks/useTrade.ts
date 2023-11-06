@@ -18,6 +18,8 @@ type ProfileData = {
   symbol: string;
   quantity: number;
   strategiesIds: string[];
+  stopLoss: number;
+  stopEnable: boolean;
   accessToken: string;
 };
 
@@ -105,6 +107,8 @@ export const useTrade = () => {
   const initializeTrades = useCallback(async () => {
     if (loaded) return;
 
+    setLoaded(false);
+
     const session = await getSession();
 
     if (!session) return;
@@ -124,15 +128,20 @@ export const useTrade = () => {
 
   const addStockAnalysis = useCallback(
     async (profileData: ProfileData) => {
-      const { name, interval, symbol, quantity, strategiesIds, accessToken } = profileData;
+      const { name, interval, symbol, quantity, strategiesIds, accessToken, stopEnable, stopLoss } =
+        profileData;
 
       try {
         const profile = await profileBotService.create(
-          name,
-          interval,
-          symbol,
-          quantity,
-          strategiesIds,
+          {
+            name,
+            interval,
+            symbol,
+            quantity,
+            strategiesIds,
+            stopEnable,
+            stopLoss,
+          },
           accessToken,
         );
 

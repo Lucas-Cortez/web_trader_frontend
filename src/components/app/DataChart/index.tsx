@@ -102,7 +102,7 @@ export const DataChart: React.FC<DataChartProps> = ({ profileId }) => {
 
   const [options, setOptions] = useState<Props["options"]>(OPTIONS);
 
-  const series = convertToChartData(data);
+  const series: Props["series"] = [{ data: convertToChartData(data) }];
 
   return (
     <div id="chart" className="w-full h-full bg-gray-100 py-1 rounded-md text">
