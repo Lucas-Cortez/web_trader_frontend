@@ -11,7 +11,9 @@ export class BinanceBrokerService implements BrokerService {
 
     const response = await fetch(`${this.url}/uiKlines?${params.toString()}`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       cache: "no-store",
     });
 

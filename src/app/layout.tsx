@@ -2,7 +2,8 @@ import { NextAuthProvider } from "@/providers/NextAuthProvider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster as ShadToaster } from "@/components/ui/toaster";
+import { Toaster as HotToaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning={true}>
       <body className={`${inter.className}`}>
         <NextAuthProvider>{children}</NextAuthProvider>
-        <Toaster />
+        <ShadToaster />
+        <HotToaster />
       </body>
     </html>
   );

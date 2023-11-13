@@ -1,16 +1,21 @@
 "use client";
 
-import { brokerService, profileBotService } from "@/services";
-import { useTradeStore } from "@/stores/useTradeStore";
-import { binanceCandleWebsocketAdapter } from "@/utils/candleAdapter";
-import { CandleListener } from "@/CandleListener";
 import { getSession } from "next-auth/react";
 import { useCallback, useState } from "react";
-import { Profile } from "@/entities/profile";
-import { strategiesOrchestrator } from "@/StrategiesOrchestrator";
-import { useStrategyStore } from "@/stores/useStrategyStore";
-import { useToast } from "@/components/ui/use-toast";
+
+import { brokerService, profileBotService } from "@/services";
+import { CandleListener } from "@/CandleListener";
+import { strategiesOrchestrator } from "@/strategies/StrategiesOrchestrator";
+import { binanceCandleWebsocketAdapter } from "@/utils/candleAdapter";
 import { Trade } from "@/enums/trade";
+import { useTradeStore } from "@/stores/useTradeStore";
+import { useStrategyStore } from "@/stores/useStrategyStore";
+import { Profile } from "@/entities/profile";
+
+import { useToast } from "@/components/ui/use-toast";
+import { Candle } from "@/entities/candle";
+import toast from "react-hot-toast";
+import { sleep } from "@/utils/helpers/sleep";
 
 type ProfileData = {
   name: string;
@@ -25,42 +30,100 @@ type ProfileData = {
 
 export const useTrade = () => {
   const [loaded, setLoaded] = useState<boolean>(false);
-  const addCandleData = useTradeStore((state) => state.addCandleData);
-  const removeCandleData = useTradeStore((state) => state.removeCandleData);
-  const updateLastData = useTradeStore((state) => state.updateLastData);
-  const reset = useTradeStore((state) => state.reset);
-  const strategies = useStrategyStore((state) => state.strategies);
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
-  const getStrategiesTags = useCallback(
-    (strategiesIds: string[]) => {
-      const tags: string[] = [];
+  // const addCandleData = useTradeStore((state) => state.addCandleData);
+  // const removeCandleData = useTradeStore((state) => state.removeCandleData);
+  // const updateLastData = useTradeStore((state) => state.updateLastData);
+  // const reset = useTradeStore((state) => state.reset);
+  // const strategies = useStrategyStore((state) => state.strategies);
 
-      strategiesIds.forEach((strategyId) => {
-        const strategy = strategies.find((v) => v.id === strategyId);
+  const getStrategiesTags = (strategiesIds: string[]) => {
+    const tags: string[] = [];
 
-        if (strategy) tags.push(strategy.tag);
-      });
+    const strategies = useStrategyStore.getState().strategies;
 
-      return tags;
-    },
-    [strategies],
-  );
+    strategiesIds.forEach((strategyId) => {
+      const strategy = strategies.find((v) => v.id === strategyId);
 
-  const processOrder = async (profileId: string, decision: Trade) => {
-    const tradeProfile = useTradeStore.getState().tradeProfiles[profileId];
+      if (strategy) tags.push(strategy.tag);
+    });
 
-    const inPosition = tradeProfile.inPosition;
-
-    if (inPosition && decision === Trade.SELL) {
-      console.log("ORDEM DE VENDA");
-      toast({ description: decision });
-    }
-    if (!inPosition && decision === Trade.BUY) {
-      console.log("ORDEM DE COMPRA");
-      toast({ description: decision });
-    }
+    return tags;
   };
+
+  const processOrder = async (profileId: string, tradeType: Trade) => {
+    console.log(`${profileId}: ${tradeType} ORDER!!`);
+    toast(`${profileId}: ${tradeType}`, { position: "bottom-right" });
+  };
+
+  const runProfileRegister = async (profileId: string) => {
+    const session = await getSession();
+
+    if (!session) return;
+
+    const version = useTradeStore.getState().tradeProfiles[profileId].version;
+
+    const data = await profileBotService.getProcessedProfile(profileId, version, session.accessToken);
+
+    if (!data) return;
+
+    console.log(data);
+  };
+
+  const takeDecision = (
+    tags: string[],
+    closingPriceCandles: number[],
+    inPosition: boolean,
+    stopLoss: number,
+    lastOrderPrice?: number,
+  ) => {
+    if (inPosition) {
+      const lastOrder = lastOrderPrice!;
+      const closingPrice = closingPriceCandles[closingPriceCandles.length - 1];
+
+      const minValue = lastOrder - lastOrder * (stopLoss * 0.01);
+
+      if (minValue >= closingPrice) return Trade.SELL;
+    }
+
+    const decision = strategiesOrchestrator.analize(tags, closingPriceCandles);
+
+    if (!decision) return null;
+
+    if (inPosition && decision === Trade.SELL) return Trade.SELL;
+    if (!inPosition && decision === Trade.BUY) return Trade.BUY;
+
+    return null;
+  };
+
+  const handleCandleListener = useCallback((candle: Candle, profile: Profile) => {
+    const {
+      data: candles,
+      inPosition,
+      lastOrderClosingPrice,
+    } = useTradeStore.getState().tradeProfiles[profile.id];
+
+    useTradeStore.getState().updateLastData(profile.id, candle);
+
+    candles.push(candle);
+
+    const tags = getStrategiesTags(profile.strategiesIds);
+
+    console.log({ candles });
+
+    const tradeType = takeDecision(
+      tags,
+      candles.map((c) => Number(c.closePrice)),
+      inPosition,
+      profile.stopLoss,
+      lastOrderClosingPrice,
+    );
+
+    if (!tradeType) return;
+
+    processOrder(profile.id, tradeType);
+  }, []);
 
   const generateCallback = useCallback(
     (profile: Profile) => (data: any) => {
@@ -68,30 +131,12 @@ export const useTrade = () => {
 
       if (!candle.closed) return;
 
-      const candles = useTradeStore.getState().tradeProfiles[profile.id].data;
-
-      updateLastData(profile.id, candle);
-
-      candles.push(candle);
-
-      const tags = getStrategiesTags(profile.strategiesIds);
-
-      const decision = strategiesOrchestrator.analize(
-        tags,
-        candles.map((c) => Number(c.closePrice)),
-      );
-
-      // console.log({ tags, decision });
-
-      if (!decision) return;
-
-      processOrder(profile.id, decision);
+      handleCandleListener(candle, profile);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getStrategiesTags, updateLastData],
+    [handleCandleListener],
   );
 
-  const handleCandleData = useCallback(
+  const initializeChartData = useCallback(
     async (profile: Profile) => {
       const candleData = await brokerService.getCandleData(profile.symbol, profile.interval);
 
@@ -99,9 +144,9 @@ export const useTrade = () => {
 
       const listener = new CandleListener({ interval: profile.interval, symbol: profile.symbol }, callback);
 
-      addCandleData(profile, candleData, listener);
+      useTradeStore.getState().addCandleData(profile, candleData, listener);
     },
-    [addCandleData, generateCallback],
+    [generateCallback],
   );
 
   const initializeTrades = useCallback(async () => {
@@ -117,14 +162,14 @@ export const useTrade = () => {
 
     for (const profile of profiles) {
       try {
-        await handleCandleData(profile);
+        await initializeChartData(profile);
       } catch (error) {
         console.log("[ERROR](initializeTrades): ", error);
       } finally {
         setLoaded(true);
       }
     }
-  }, [handleCandleData, loaded]);
+  }, [initializeChartData, loaded]);
 
   const addStockAnalysis = useCallback(
     async (profileData: ProfileData) => {
@@ -145,20 +190,20 @@ export const useTrade = () => {
           accessToken,
         );
 
-        await handleCandleData(profile);
+        await initializeChartData(profile);
       } catch (error) {
         console.log("[ERROR](addStockAnalysis): ", error);
       }
     },
-    [handleCandleData],
+    [initializeChartData],
   );
 
   const deleteStockAnalysis = async (profileId: string, accessToken: string) => {
     await profileBotService.delete(profileId, accessToken);
-    removeCandleData(profileId);
+    useTradeStore.getState().removeCandleData(profileId);
   };
 
-  const finishTrades = () => reset();
+  const finishTrades = () => useTradeStore.getState().reset();
 
   return { addStockAnalysis, deleteStockAnalysis, initializeTrades, finishTrades };
 };

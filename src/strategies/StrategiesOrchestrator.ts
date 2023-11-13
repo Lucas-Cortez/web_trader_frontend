@@ -1,8 +1,7 @@
-import { Profile } from "./entities/profile";
-import { Trade } from "./enums/trade";
-import { AnalysisStrategy } from "./strategies/AnalysisStrategy";
-import { BollingerBandsStrategy } from "./strategies/implementation/BollingerBandsStrategy";
-import { RsiStrategy } from "./strategies/implementation/RsiStrategy";
+import { Trade } from "../enums/trade";
+import { AnalysisStrategy } from "./AnalysisStrategy";
+import { BollingerBandsStrategy } from "./implementation/BollingerBandsStrategy";
+import { RsiStrategy } from "./implementation/RsiStrategy";
 
 export class StrategiesOrchestrator {
   private readonly strategies: Record<string, AnalysisStrategy>;

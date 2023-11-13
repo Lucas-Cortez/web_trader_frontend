@@ -9,7 +9,7 @@ export const BackButton: React.FC = () => {
   const paths = useSelectedLayoutSegments();
 
   return paths.length ? (
-    <Button variant={"outline"} size="icon" onClick={() => router.back()}>
+    <Button variant={"outline"} size="icon" onClick={() => router.push("/painel")}>
       <ChevronLeft className="w-4 h-4" />
     </Button>
   ) : null;

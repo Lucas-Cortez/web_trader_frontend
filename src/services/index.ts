@@ -5,7 +5,7 @@ import { ProfileBotService } from "./profileBotService";
 import { AppProfileBotService } from "./implementation/appProfileBotService";
 
 import { BrokerService } from "./brokerService";
-import { BinanceBrokerService } from "./implementation/binanceBrokerService";
+// import { BinanceBrokerService } from "./implementation/binanceBrokerService";
 import { MockBrokerService } from "./mocks/mockBrokerService";
 import { BinanceCandleAdapter } from "@/utils/candleAdapter";
 

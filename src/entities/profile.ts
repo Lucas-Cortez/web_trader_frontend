@@ -6,7 +6,9 @@ export interface Profile {
   readonly inPosition: boolean;
   readonly strategiesIds: string[];
   readonly quantity: number;
-  readonly lastOrder?: Date;
+  readonly lastOrderTime?: Date;
+  readonly lastOrderClosingPrice?: number;
   readonly stopLoss: number;
   readonly stopEnable: boolean;
+  readonly version: number;
 }

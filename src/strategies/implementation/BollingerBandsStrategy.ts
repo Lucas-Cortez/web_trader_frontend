@@ -13,12 +13,11 @@ export class BollingerBandsStrategy extends AnalysisStrategy {
       stdDev: 2,
     });
 
+    console.log({ data });
+
     const last = data[data.length - 2];
 
     const closingPrice = input.closingPrice;
-    // console.log("================================");
-
-    // console.log({ last, closingPrice });
 
     const upper = last.upper;
     const lower = last.lower;

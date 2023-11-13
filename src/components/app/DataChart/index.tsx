@@ -6,6 +6,17 @@ import ReactApexChart, { Props } from "react-apexcharts";
 import { useTradeStore } from "@/stores/useTradeStore";
 import { convertToChartData } from "@/utils/helpers/convertToChartData";
 
+const formatDate = (timestamp: number) => {
+  const months = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const date = new Date(timestamp);
+
+  const minutes = date.getMinutes();
+
+  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} ${date.getHours()}:${
+    (minutes < 10 ? "0" : "") + minutes
+  }`;
+};
+
 const OPTIONS: Props["options"] = {
   chart: {
     type: "candlestick",
@@ -44,12 +55,17 @@ const OPTIONS: Props["options"] = {
       formatter(value) {
         const months = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
         const date = new Date(value);
+
         const minutes = date.getMinutes();
 
-        return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()} ${date.getHours()}:${
+        return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} ${date.getHours()}:${
           (minutes < 10 ? "0" : "") + minutes
         }`;
       },
+    },
+    labels: {
+      format: "HH:mm",
+      datetimeUTC: false,
     },
   },
   yaxis: {
@@ -60,7 +76,7 @@ const OPTIONS: Props["options"] = {
   // annotations: {
   //   xaxis: [
   //     {
-  //       x: new Date(1538816400000).getTime(),
+  //       x: new Date(1699645740000).getTime(),
   //       borderColor: "#2761ff",
   //       label: {
   //         borderColor: "#2761ff",
@@ -75,7 +91,7 @@ const OPTIONS: Props["options"] = {
   //       },
   //     },
   //     {
-  //       x: new Date(1538861400000).getTime(),
+  //       x: new Date(1699648080000).getTime(),
   //       borderColor: "#ffbd67",
   //       label: {
   //         borderColor: "#ffbd67",

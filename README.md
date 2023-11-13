@@ -71,6 +71,6 @@
 
 - [x] Inserir biblioteca de gráfico para a visualização dos dados✅
 
-- [ ] Adição de informações sobre a carteira do usuário
+- [ ] Adição de informações sobre a carteira do usuário [DEPRECATED]
 
 - [ ] Esqueceu a senha(????)

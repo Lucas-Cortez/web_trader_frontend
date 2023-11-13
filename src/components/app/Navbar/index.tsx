@@ -26,7 +26,7 @@ export const Navbar: React.FC = async () => {
     .toUpperCase();
 
   return (
-    <header className="h-16 border-b fixed w-full bg-white">
+    <header className="h-16 border-b fixed w-full bg-white z-10">
       <div className="w-full h-full flex justify-between items-center px-12 shadow-lg">
         <div>
           <BackButton />
@@ -43,28 +43,29 @@ export const Navbar: React.FC = async () => {
 
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Link href={"/painel/perfil"} className="flex w-full">
+              <Link href={"/painel/perfil"}>
+                <DropdownMenuItem className="w-full h-full cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
                   <span>Perfil</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href={"/painel/historico"} className="flex w-full">
+                </DropdownMenuItem>
+              </Link>
+
+              <Link href={"/painel/historico"}>
+                <DropdownMenuItem className="w-full h-full cursor-pointer">
                   <History className="mr-2 h-4 w-4" />
                   <span>Histórico</span>
-                </Link>
-              </DropdownMenuItem>
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem className="">
-              <SignOutButtonProvider className="w-full h-full flex items-center cursor-pointer">
+            <SignOutButtonProvider className="">
+              <DropdownMenuItem className="w-full h-full cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
-              </SignOutButtonProvider>
-            </DropdownMenuItem>
+              </DropdownMenuItem>
+            </SignOutButtonProvider>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

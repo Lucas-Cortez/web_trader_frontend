@@ -128,10 +128,12 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
                 </SelectTrigger>
 
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="btcbrl">BTCBRL</SelectItem>
-                    <SelectItem value="adabrl">ADABRL</SelectItem>
-                  </SelectGroup>
+                  <ScrollArea className="h-48">
+                    <SelectGroup>
+                      <SelectItem value="btcbrl">BTCBRL</SelectItem>
+                      <SelectItem value="adabrl">ADABRL</SelectItem>
+                    </SelectGroup>
+                  </ScrollArea>
                 </SelectContent>
               </Select>
             )}
@@ -151,24 +153,26 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
                 </SelectTrigger>
 
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="1s">1 segundo</SelectItem>
-                    <SelectItem value="1m">1 minuto</SelectItem>
-                    <SelectItem value="3m">3 minutos</SelectItem>
-                    <SelectItem value="5m">5 minutos</SelectItem>
-                    <SelectItem value="15m">15 minutos</SelectItem>
-                    <SelectItem value="30m">30 minutos</SelectItem>
-                    <SelectItem value="1h">1 hora</SelectItem>
-                    <SelectItem value="2h">2 horas</SelectItem>
-                    <SelectItem value="4h">4 horas</SelectItem>
-                    <SelectItem value="6h">6 horas</SelectItem>
-                    <SelectItem value="8h">8 horas</SelectItem>
-                    <SelectItem value="12h">12 horas</SelectItem>
-                    <SelectItem value="1d">1 dia</SelectItem>
-                    <SelectItem value="3d">3 dias</SelectItem>
-                    <SelectItem value="1w">1 semana</SelectItem>
-                    <SelectItem value="1M">1 mês</SelectItem>
-                  </SelectGroup>
+                  <ScrollArea className="h-48">
+                    <SelectGroup>
+                      {/* <SelectItem value="1s">1 segundo</SelectItem> */}
+                      <SelectItem value="1m">1 minuto</SelectItem>
+                      <SelectItem value="3m">3 minutos</SelectItem>
+                      <SelectItem value="5m">5 minutos</SelectItem>
+                      <SelectItem value="15m">15 minutos</SelectItem>
+                      <SelectItem value="30m">30 minutos</SelectItem>
+                      <SelectItem value="1h">1 hora</SelectItem>
+                      <SelectItem value="2h">2 horas</SelectItem>
+                      <SelectItem value="4h">4 horas</SelectItem>
+                      <SelectItem value="6h">6 horas</SelectItem>
+                      <SelectItem value="8h">8 horas</SelectItem>
+                      <SelectItem value="12h">12 horas</SelectItem>
+                      <SelectItem value="1d">1 dia</SelectItem>
+                      <SelectItem value="3d">3 dias</SelectItem>
+                      <SelectItem value="1w">1 semana</SelectItem>
+                      <SelectItem value="1M">1 mês</SelectItem>
+                    </SelectGroup>
+                  </ScrollArea>
                 </SelectContent>
               </Select>
             )}
@@ -181,7 +185,7 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
           Valor{" "}
           <span className="text-xs text-gray-400">(Montante da moeda a ser negociado a cada transação)</span>
         </Label>
-        <Input type="number" step="0.01" {...register("quantity")} />
+        <Input type="number" step="any" min={0} {...register("quantity")} />
       </div>
 
       <div>
@@ -190,15 +194,19 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
         </Label>
 
         <div className="flex w-full gap-4 ">
-          <div className={`relative w-1/2 ${stopEnable ? "" : "opacity-50"}`}>
+          {/* <div className={`relative w-1/2 ${stopEnable ? "" : "opacity-50"}`}> */}
+          <div className={`w-1/2 ${stopEnable ? "" : "opacity-50"} flex items-center gap-2`}>
             <Input
               type="number"
               step="any"
+              min={0}
+              max={100}
               defaultValue={0}
               disabled={!stopEnable}
               {...register("stopLoss")}
             />
-            <span className="absolute right-8 top-1/2 -translate-y-1/2">%</span>
+            <span className="">%</span>
+            {/* <span className="absolute right-8 top-1/2 -translate-y-1/2">%</span> */}
           </div>
 
           <Controller

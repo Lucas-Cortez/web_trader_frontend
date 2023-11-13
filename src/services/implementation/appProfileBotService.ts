@@ -1,5 +1,6 @@
 import { Profile } from "@/entities/profile";
 import { ProfileBotService } from "../profileBotService";
+import { sleep } from "@/utils/helpers/sleep";
 
 export class AppProfileBotService implements ProfileBotService {
   private readonly url = `${process.env.NEXT_PUBLIC_API_URL}/profile`;
@@ -22,7 +23,7 @@ export class AppProfileBotService implements ProfileBotService {
     return data.map((v) => ({ ...v }));
   }
 
-  async create(profile: Omit<Profile, "id" | "inPosition">, accessToken: string): Promise<any> {
+  async create(profile: Omit<Profile, "id" | "inPosition" | "version">, accessToken: string): Promise<any> {
     const response = await fetch(this.url, {
       headers: {
         "Content-Type": "application/json",
@@ -63,5 +64,54 @@ export class AppProfileBotService implements ProfileBotService {
     const data = (await response.json()) as { status: string };
 
     return data.status;
+  }
+
+  private async *processPollingProfile(profileId: string, oldVersion: number, accessToken: string) {
+    while (true) {
+      try {
+        const info = await this.getVersionizedProfile(profileId, oldVersion, accessToken);
+        yield info;
+        if (info) break;
+        await sleep(1000);
+      } catch (error) {
+        if (error instanceof Error) console.error("Error fetching data:", error.message);
+        break;
+      }
+    }
+  }
+
+  private async getVersionizedProfile(
+    profileId: string,
+    version: number,
+    accessToken: string,
+  ): Promise<Profile | null> {
+    const response = await fetch(`${this.url}/version/${profileId}/${version}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+    });
+
+    if (response.status !== 200) throw new Error("server error");
+
+    const data = (await response.json()) as Profile | null;
+
+    return data;
+  }
+
+  async getProcessedProfile(
+    profileId: string,
+    version: number,
+    accessToken: string,
+  ): Promise<Profile | null> {
+    let profile: Profile | null = null;
+
+    for await (const res of this.processPollingProfile(profileId, version, accessToken)) {
+      if (res) profile = res;
+    }
+
+    return profile;
   }
 }
