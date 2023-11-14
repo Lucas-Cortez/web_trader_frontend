@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/app/Navbar";
+import { Navbar } from "@/components/common/Navbar";
 import { InitializeChartsProvider } from "@/providers/InitializeChartsProvider";
 // import { authOptions } from "@/lib/auth";
 // import { getServerSession } from "next-auth";

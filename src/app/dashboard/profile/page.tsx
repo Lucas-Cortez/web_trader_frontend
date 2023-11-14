@@ -1,6 +1,6 @@
-import { ApiKeyForm } from "@/components/app/ApiKeyForm";
-import { Container } from "@/components/app/Container";
-import { UserProfileForm } from "@/components/app/UserProfileForm";
+import { ApiKeyForm } from "@/components/common/ApiKeyForm";
+import { Container } from "@/components/common/Container";
+import { UserProfileForm } from "@/components/common/UserProfileForm";
 
 export default async function ProfilePage() {
   return (

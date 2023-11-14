@@ -1,5 +1,5 @@
-import { Container } from "@/components/app/Container";
-import { OrderTable } from "@/components/app/OrderTable";
+import { Container } from "@/components/common/Container";
+import { OrderTable } from "@/components/common/OrderTable";
 
 export default function HistoryPage(params: any) {
   return (

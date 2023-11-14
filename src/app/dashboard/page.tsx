@@ -1,6 +1,6 @@
-import { ChartsSection } from "@/components/app/ChartsSection";
-import { Container } from "@/components/app/Container";
-import { CreateAnalysisModal } from "@/components/app/CreateAnalysisModal";
+import { ChartsSection } from "@/components/common/ChartsSection";
+import { Container } from "@/components/common/Container";
+import { CreateAnalysisModal } from "@/components/common/CreateAnalysisModal";
 
 export default function DashboardPage() {
   return (

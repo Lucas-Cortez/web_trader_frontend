@@ -1,4 +1,4 @@
-import { SignInForm } from "@/components/app/SignInForm";
+import { SignInForm } from "@/components/common/SignInForm";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
