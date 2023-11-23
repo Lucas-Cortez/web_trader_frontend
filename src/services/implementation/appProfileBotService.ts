@@ -2,6 +2,9 @@ import { Profile } from "@/entities/profile";
 import { ProfileBotService } from "../profileBotService";
 import { sleep } from "@/utils/helpers/sleep";
 
+const MS_INTERVAL_POLLING = 3 * 1000;
+const POLLING_TIMEOUT = 60 * 1000;
+
 export class AppProfileBotService implements ProfileBotService {
   private readonly url = `${process.env.NEXT_PUBLIC_API_URL}/profile`;
 
@@ -67,12 +70,25 @@ export class AppProfileBotService implements ProfileBotService {
   }
 
   private async *processPollingProfile(profileId: string, oldVersion: number, accessToken: string) {
+    const limitTime = new Date().getTime() + POLLING_TIMEOUT;
+
     while (true) {
+      const endTime = new Date().getTime();
+      if (limitTime < endTime) {
+        yield null;
+        break;
+      }
+
       try {
         const info = await this.getVersionizedProfile(profileId, oldVersion, accessToken);
         yield info;
-        if (info) break;
-        await sleep(1000);
+
+        if (info && info.version > oldVersion) {
+          console.log(`New version detected (${info.version}). Stopping the polling.`);
+          break;
+        }
+
+        await sleep(MS_INTERVAL_POLLING);
       } catch (error) {
         if (error instanceof Error) console.error("Error fetching data:", error.message);
         break;

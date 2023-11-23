@@ -2,7 +2,6 @@
 
 import { useTradeStore } from "@/stores/useTradeStore";
 import { ChartMenu } from "../ChartMenu";
-import { useState } from "react";
 import { DataChart } from "../DataChart";
 
 type ChartProps = {

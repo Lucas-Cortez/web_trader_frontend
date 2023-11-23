@@ -59,4 +59,19 @@ export class AppAuthService implements AuthService {
       user: { id: user.id, name: user.name, email: user.email, hasKey: user.hasKey },
     };
   }
+
+  async updatePassword(oldPassword: string, newPassword: string, accessToken: string): Promise<boolean> {
+    const response = await fetch(`${this.url}/new-password`, {
+      headers: { "Content-Type": "application/json", authorization: `Bearer ${accessToken}` },
+      method: "POST",
+      body: JSON.stringify({ oldPassword, newPassword }),
+      cache: "no-store",
+    });
+
+    if (response.status !== 200) throw new Error("server error");
+
+    // const data = (await response.json()) as { status: string };
+
+    return true;
+  }
 }

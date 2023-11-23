@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import ReactApexChart, { Props } from "react-apexcharts";
+import dynamic from "next/dynamic";
+import type { Props } from "react-apexcharts";
 
 import { useTradeStore } from "@/stores/useTradeStore";
 import { convertToChartData } from "@/utils/helpers/convertToChartData";
+
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const formatDate = (timestamp: number) => {
   const months = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];

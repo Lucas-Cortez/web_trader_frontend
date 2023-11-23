@@ -2,20 +2,18 @@
 
 import { getSession } from "next-auth/react";
 import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
 
 import { brokerService, profileBotService } from "@/services";
 import { CandleListener } from "@/CandleListener";
 import { strategiesOrchestrator } from "@/strategies/StrategiesOrchestrator";
 import { binanceCandleWebsocketAdapter } from "@/utils/candleAdapter";
-import { Trade } from "@/enums/trade";
 import { useTradeStore } from "@/stores/useTradeStore";
 import { useStrategyStore } from "@/stores/useStrategyStore";
-import { Profile } from "@/entities/profile";
 
-import { useToast } from "@/components/ui/use-toast";
+import { Trade } from "@/enums/trade";
+import { Profile } from "@/entities/profile";
 import { Candle } from "@/entities/candle";
-import toast from "react-hot-toast";
-import { sleep } from "@/utils/helpers/sleep";
 
 type ProfileData = {
   name: string;
@@ -30,13 +28,6 @@ type ProfileData = {
 
 export const useTrade = () => {
   const [loaded, setLoaded] = useState<boolean>(false);
-  // const { toast } = useToast();
-
-  // const addCandleData = useTradeStore((state) => state.addCandleData);
-  // const removeCandleData = useTradeStore((state) => state.removeCandleData);
-  // const updateLastData = useTradeStore((state) => state.updateLastData);
-  // const reset = useTradeStore((state) => state.reset);
-  // const strategies = useStrategyStore((state) => state.strategies);
 
   const getStrategiesTags = (strategiesIds: string[]) => {
     const tags: string[] = [];
@@ -55,6 +46,7 @@ export const useTrade = () => {
   const processOrder = async (profileId: string, tradeType: Trade) => {
     console.log(`${profileId}: ${tradeType} ORDER!!`);
     toast(`${profileId}: ${tradeType}`, { position: "bottom-right" });
+    // runProfileRegister(profileId);
   };
 
   const runProfileRegister = async (profileId: string) => {
@@ -68,17 +60,18 @@ export const useTrade = () => {
 
     if (!data) return;
 
-    console.log(data);
+    useTradeStore.getState().updateProfile(profileId, data);
   };
 
   const takeDecision = (
     tags: string[],
     closingPriceCandles: number[],
     inPosition: boolean,
+    stopEnable: boolean,
     stopLoss: number,
     lastOrderPrice?: number,
   ) => {
-    if (inPosition) {
+    if (stopEnable && inPosition) {
       const lastOrder = lastOrderPrice!;
       const closingPrice = closingPriceCandles[closingPriceCandles.length - 1];
 
@@ -102,6 +95,7 @@ export const useTrade = () => {
       data: candles,
       inPosition,
       lastOrderClosingPrice,
+      stopEnable,
     } = useTradeStore.getState().tradeProfiles[profile.id];
 
     useTradeStore.getState().updateLastData(profile.id, candle);
@@ -116,6 +110,7 @@ export const useTrade = () => {
       tags,
       candles.map((c) => Number(c.closePrice)),
       inPosition,
+      stopEnable,
       profile.stopLoss,
       lastOrderClosingPrice,
     );
@@ -123,6 +118,7 @@ export const useTrade = () => {
     if (!tradeType) return;
 
     processOrder(profile.id, tradeType);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const generateCallback = useCallback(

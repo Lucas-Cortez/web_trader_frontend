@@ -9,4 +9,6 @@ export interface AuthService {
     password: string,
     passwordConfirmation: string,
   ): Promise<{ accessToken: string; user: UserWithKey }>;
+
+  updatePassword(oldPassword: string, newPassword: string, accessToken: string): Promise<boolean>;
 }

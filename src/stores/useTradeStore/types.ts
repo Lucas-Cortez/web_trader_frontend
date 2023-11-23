@@ -11,6 +11,7 @@ type TradeActions = {
   removeCandleData: (id: string) => void;
   updateLastData: (id: string, data: Candle) => void;
   reset: () => void;
+  updateProfile: (id: string, profile: Partial<Profile>) => void;
 };
 
 export type TradeStore = TradeState & TradeActions;
