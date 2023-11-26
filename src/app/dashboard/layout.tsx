@@ -1,3 +1,5 @@
+"use client";
+
 import { Navbar } from "@/components/common/Navbar";
 import { InitializeChartsProvider } from "@/providers/InitializeChartsProvider";
 // import { orderService } from "@/services";
