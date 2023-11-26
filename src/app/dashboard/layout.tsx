@@ -1,18 +1,16 @@
-"use client";
-
 import { Navbar } from "@/components/common/Navbar";
 import { InitializeChartsProvider } from "@/providers/InitializeChartsProvider";
 // import { orderService } from "@/services";
-// import { authOptions } from "@/lib/auth";
-// import { getServerSession } from "next-auth";
-// import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // const session = await getServerSession(authOptions);
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(authOptions);
   // console.log(session);
 
-  // if (!session) redirect(`/entrar`);
-
+  if (!session) redirect(`/entrar`);
+  //
   // const orders = await orderService.getUserOrders(session?.accessToken || "");
   // console.log(orders);
 
