@@ -4,13 +4,22 @@ import { createStoreWithMiddleware } from "../createStoreWithMiddleware";
 import { CandleListener } from "@/CandleListener";
 import { StateCreator } from "zustand";
 import { Profile } from "@/entities/profile";
+import { Order } from "@/entities/order";
 
 const tradeStore: StateCreator<TradeStore, [], []> = (set) => ({
   tradeProfiles: {},
 
-  addCandleData: (profile: Profile, data: Candle[], listener: CandleListener) =>
+  addProfileOrder: (id, order) =>
     set((state) => ({
-      tradeProfiles: { ...state.tradeProfiles, [profile.id]: { ...profile, data, listener } },
+      tradeProfiles: {
+        ...state.tradeProfiles,
+        [id]: { ...state.tradeProfiles[id], orders: [...state.tradeProfiles[id].orders, order] },
+      },
+    })),
+
+  addCandleData: (profile: Profile, data: Candle[], listener: CandleListener, orders: Order[]) =>
+    set((state) => ({
+      tradeProfiles: { ...state.tradeProfiles, [profile.id]: { ...profile, data, listener, orders } },
     })),
 
   removeCandleData: (id: string) =>

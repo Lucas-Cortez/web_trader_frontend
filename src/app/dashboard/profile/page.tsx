@@ -6,7 +6,6 @@ export default async function ProfilePage() {
   return (
     <main className="h-full py-8">
       <Container>
-        {/* <StopsForm /> */}
         <UserProfileForm />
         <ApiKeyForm />
       </Container>

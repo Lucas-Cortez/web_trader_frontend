@@ -68,7 +68,7 @@ export const OrderTable: React.FC = () => {
                   <Badge>{order.symbol.toUpperCase()}</Badge>
                 </TableCell>
                 <TableCell>
-                  <TradeBadge tradeType={order.trade === "sell" ? Trade.SELL : Trade.BUY} />
+                  <TradeBadge tradeType={order.trade as Trade} />
                 </TableCell>
                 <TableCell>{order.value}</TableCell>
               </TableRow>

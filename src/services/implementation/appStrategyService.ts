@@ -10,7 +10,7 @@ export class AppStrategyService implements StrategyService {
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: { revalidate: 60 * 60 * 24 },
     });
 
     const data = (await response.json()) as Strategy[];

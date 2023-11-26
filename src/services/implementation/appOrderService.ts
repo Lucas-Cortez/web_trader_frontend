@@ -1,15 +1,19 @@
 import { Order } from "@/entities/order";
-import { OrderService } from "../orderService";
+import { OrderService, PaginationOptions } from "../orderService";
 import { Trade } from "@/enums/trade";
 
 export class AppOrderService implements OrderService {
   private readonly url = `${process.env.NEXT_PUBLIC_API_URL}/order`;
 
   async createOrder(
-    order: { tradeType: Trade; quantity: number; symbol: string; profileId: string; closingPrice: number },
+    profileId: string,
+    order: {
+      tradeType: Trade;
+      closingPrice: number;
+    },
     accessToken: string,
   ): Promise<boolean> {
-    const response = await fetch(`${this.url}/${order.profileId}`, {
+    const response = await fetch(`${this.url}/${profileId}`, {
       headers: { "Content-Type": "application/json", authorization: `Bearer ${accessToken}` },
       method: "POST",
       cache: "no-store",
@@ -35,5 +39,28 @@ export class AppOrderService implements OrderService {
     const { orders } = data;
 
     return orders;
+  }
+
+  async getProfileOrders(
+    profileId: string,
+    accessToken: string,
+    options?: PaginationOptions,
+  ): Promise<Order[]> {
+    const params = new URLSearchParams({
+      ...(options?.endTime && { endTime: options.endTime.toString() }),
+      ...(options?.startTime && { startTime: options.startTime.toString() }),
+      ...(options?.skip && { skip: options.skip.toString() }),
+      ...(options?.take && { take: options.take.toString() }),
+    });
+
+    const response = await fetch(`${this.url}/profile/${profileId}?${params.toString()}`, {
+      headers: { "Content-Type": "application/json", authorization: `Bearer ${accessToken}` },
+      method: "GET",
+      cache: "no-store",
+    });
+
+    const data = (await response.json()) as { orders: Order[] };
+
+    return data.orders;
   }
 }

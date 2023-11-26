@@ -4,7 +4,7 @@ import { getSession } from "next-auth/react";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
-import { brokerService, profileBotService } from "@/services";
+import { brokerService, orderService, profileBotService } from "@/services";
 import { CandleListener } from "@/CandleListener";
 import { strategiesOrchestrator } from "@/strategies/StrategiesOrchestrator";
 import { binanceCandleWebsocketAdapter } from "@/utils/candleAdapter";
@@ -14,6 +14,7 @@ import { useStrategyStore } from "@/stores/useStrategyStore";
 import { Trade } from "@/enums/trade";
 import { Profile } from "@/entities/profile";
 import { Candle } from "@/entities/candle";
+import { useOrderStore } from "@/stores/useOrderStore";
 
 type ProfileData = {
   name: string;
@@ -43,10 +44,15 @@ export const useTrade = () => {
     return tags;
   };
 
-  const processOrder = async (profileId: string, tradeType: Trade) => {
-    console.log(`${profileId}: ${tradeType} ORDER!!`);
-    toast(`${profileId}: ${tradeType}`, { position: "bottom-right" });
-    // runProfileRegister(profileId);
+  const processOrder = async (profile: Profile, tradeType: Trade, closingPrice: number) => {
+    const session = await getSession();
+
+    if (!session) return;
+
+    console.log(`${profile.id}: ${tradeType} ORDER!!`);
+    toast(`${profile.id}: ${tradeType === Trade.BUY ? "Compra" : "Venda"}`, { position: "bottom-right" });
+    const opa = await orderService.createOrder(profile.id, { tradeType, closingPrice }, session.accessToken);
+    runProfileRegister(profile.id);
   };
 
   const runProfileRegister = async (profileId: string) => {
@@ -60,7 +66,19 @@ export const useTrade = () => {
 
     if (!data) return;
 
+    const orders = await orderService.getProfileOrders(profileId, session.accessToken, {
+      take: 1,
+      skip: 0,
+    });
+
+    const lastOrder = orders[0];
+
     useTradeStore.getState().updateProfile(profileId, data);
+
+    if (lastOrder) return;
+
+    useTradeStore.getState().addProfileOrder(profileId, lastOrder);
+    useOrderStore.getState().addOrder(lastOrder);
   };
 
   const takeDecision = (
@@ -115,7 +133,7 @@ export const useTrade = () => {
 
     if (!tradeType) return;
 
-    processOrder(profile.id, tradeType);
+    processOrder(profile, tradeType, Number(candle.closePrice));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -131,14 +149,16 @@ export const useTrade = () => {
   );
 
   const initializeChartData = useCallback(
-    async (profile: Profile) => {
+    async (profile: Profile, accessToken: string) => {
       const candleData = await brokerService.getCandleData(profile.symbol, profile.interval);
 
       const callback = generateCallback(profile);
 
       const listener = new CandleListener({ interval: profile.interval, symbol: profile.symbol }, callback);
 
-      useTradeStore.getState().addCandleData(profile, candleData, listener);
+      const profileOrders = await orderService.getProfileOrders(profile.id, accessToken);
+
+      useTradeStore.getState().addCandleData(profile, candleData, listener, profileOrders);
     },
     [generateCallback],
   );
@@ -156,7 +176,7 @@ export const useTrade = () => {
 
     for (const profile of profiles) {
       try {
-        await initializeChartData(profile);
+        await initializeChartData(profile, session.accessToken);
       } catch (error) {
         console.log("[ERROR](initializeTrades): ", error);
       } finally {
@@ -184,7 +204,7 @@ export const useTrade = () => {
           accessToken,
         );
 
-        await initializeChartData(profile);
+        await initializeChartData(profile, accessToken);
       } catch (error) {
         console.log("[ERROR](addStockAnalysis): ", error);
       }

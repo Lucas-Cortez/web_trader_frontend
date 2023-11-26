@@ -10,7 +10,7 @@ type AuthCredentials = {
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: "/entrar", error: "/error", newUser: "/cadastrar" },
-  session: { maxAge: 60 * 60 },
+  session: { maxAge: 60 * 60 * 24 },
   providers: [
     CredentialsProvider({
       name: "App Credentials",
