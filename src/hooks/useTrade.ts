@@ -104,8 +104,6 @@ export const useTrade = () => {
 
     const tags = getStrategiesTags(profile.strategiesIds);
 
-    console.log({ candles });
-
     const tradeType = takeDecision(
       tags,
       candles.map((c) => Number(c.closePrice)),

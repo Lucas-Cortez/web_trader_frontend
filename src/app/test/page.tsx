@@ -2,6 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { brokerService } from "@/services";
 
 // import { useTrade } from "@/hooks/useTrade";
 // import { useTradeStore } from "@/stores/useTradeStore";
@@ -14,17 +15,15 @@ export default function TestPage() {
     <div>
       {/* <DataChart /> */}
 
-      <Input type="text" />
-      <Checkbox
-        defaultChecked={true}
-        checked={false}
-        // onCheckedChange={(v) => {
-        //   console.log("event:", v);
-        // }}
-        // onChange={(e) => {
-        //   console.log("event:", e.currentTarget);
-        // }}
-      />
+      <button
+        onClick={() => {
+          // fetch("/api/broker?symbol=BTCBRL&interval=1m");
+
+          brokerService.getCandleData("BTCBRL", "1m");
+        }}
+      >
+        click
+      </button>
     </div>
   );
 }

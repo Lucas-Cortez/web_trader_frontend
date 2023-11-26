@@ -16,6 +16,8 @@ export class AppAuthService implements AuthService {
   private readonly url = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
   async login(email: string, password: string): Promise<{ accessToken: string; user: UserWithKey }> {
+    console.log(this.url);
+
     const response = await fetch(this.url, {
       headers: { "Content-Type": "application/json" },
       method: "POST",

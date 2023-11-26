@@ -39,7 +39,6 @@ export const UserProfileForm: React.FC = () => {
   } = useForm<UserNewPasswordValues>({ resolver: zodResolver(userNewPasswordSchema) });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
     const created = await authService.updatePassword(
       data.oldPassword,
       data.password,

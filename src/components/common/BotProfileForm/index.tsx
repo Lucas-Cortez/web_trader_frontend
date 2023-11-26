@@ -25,6 +25,46 @@ import { useStrategyStore } from "@/stores/useStrategyStore";
 import { Switch } from "@/components/ui/switch";
 // import { useStrategy } from "@/hooks/useStrategy";
 
+const symbols = [
+  "AAVEBRL",
+  "ADABRL",
+  "APEBRL",
+  "APTBRL",
+  "ATOMBRL",
+  "AVAXBRL",
+  "AXSBRL",
+  "BNBBRL",
+  "BTCBRL",
+  "BTTBRL",
+  "BUSDBRL",
+  "C98BRL",
+  "CAKEBRL",
+  "CHZBRL",
+  "DOGEBRL",
+  "DOTBRL",
+  "ENJBRL",
+  "ETCBRL",
+  "ETHBRL",
+  "FISBRL",
+  "FTMBRL",
+  "GALABRL",
+  "GALBRL",
+  "GMTBRL",
+  "HOTBRL",
+  "LINKBRL",
+  "LTCBRL",
+  "LUNABRL",
+  "MANABRL",
+  "MATICBRL",
+  "SANDBRL",
+  "SANTOSBRL",
+  "SHIBBRL",
+  "SOLBRL",
+  "USDTBRL",
+  "WINBRL",
+  "XRPBRL",
+];
+
 const createBotProfileSchema = z
   .object({
     name: z.string().min(1),
@@ -75,7 +115,6 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
     async (formData) => {
       const { name, interval, quantity, symbol, strategies, stopEnable, stopLoss } = formData;
       const session = await getSession();
-      console.log(formData);
 
       await addStockAnalysis({
         name,
@@ -130,8 +169,13 @@ export const BotProfileForm: React.FC<{ onSubmitAction: () => void }> = ({ onSub
                 <SelectContent>
                   <ScrollArea className="h-48">
                     <SelectGroup>
-                      <SelectItem value="btcbrl">BTCBRL</SelectItem>
-                      <SelectItem value="adabrl">ADABRL</SelectItem>
+                      {symbols.map((symbol) => (
+                        <SelectItem key={symbol} value={symbol.toLowerCase()}>
+                          {symbol}
+                        </SelectItem>
+                      ))}
+                      {/* <SelectItem value="btcbrl">BTCBRL</SelectItem>
+                      <SelectItem value="adabrl">ADABRL</SelectItem> */}
                     </SelectGroup>
                   </ScrollArea>
                 </SelectContent>

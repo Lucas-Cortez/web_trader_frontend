@@ -30,11 +30,16 @@ export const ApiKeyForm: React.FC = () => {
   const handleSave = async () => {
     if (!key) return;
     setLoadingSave((prev) => !prev);
-    await apiKeyService.create({ key, secret }, data.accessToken);
-    await update({ hasKey: true });
-    setSecret("");
-    setKey("");
-    setLoadingSave((prev) => !prev);
+    try {
+      await apiKeyService.create({ key, secret }, data.accessToken);
+      await update({ hasKey: true });
+      setSecret("");
+      setKey("");
+    } catch (error) {
+      toast({ description: "Chaves inválidas", variant: "destructive" });
+    } finally {
+      setLoadingSave((prev) => !prev);
+    }
   };
 
   const handleDelete = async () => {

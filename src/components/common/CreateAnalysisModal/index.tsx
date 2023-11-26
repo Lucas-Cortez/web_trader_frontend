@@ -32,7 +32,7 @@ export const CreateAnalysisModal: React.FC = () => {
     if (!!data?.user.hasKey) setOpen(v);
     else
       toast({
-        description: "É necessário registrar uma chave de API para utilizar este recurso",
+        description: "É necessário registrar uma chaves de autenticação para utilizar este recurso",
         variant: "destructive",
         action: (
           <ToastAction altText="registry" onClick={() => router.push("/painel/perfil")}>

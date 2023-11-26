@@ -12,13 +12,6 @@ export default function DashboardPage() {
           <CreateAnalysisModal />
         </div>
 
-        {/* <div className="flex justify-between">
-          <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
-          <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
-          <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
-          <div className="bg-gray-200 w-[22.5%] h-20 border border-gray-300 rounded-lg shadow-lg"></div>
-        </div> */}
-
         <ChartsSection />
       </Container>
     </main>
