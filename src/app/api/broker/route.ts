@@ -8,6 +8,8 @@ export async function GET(req: NextRequest) {
 
     if (!(symbol && interval)) throw new Error("missing parameters");
 
+    console.log({ symbol, interval });
+
     const params = new URLSearchParams({ symbol: symbol.toUpperCase(), interval, limit: "1000" });
 
     const url = `${process.env.NEXT_PUBLIC_BROKER_API_URL}/api/v3/uiKlines?${params.toString()}`;
@@ -15,6 +17,7 @@ export async function GET(req: NextRequest) {
     const response = await fetch(url);
 
     const data = await response.json();
+    console.log({ data });
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
