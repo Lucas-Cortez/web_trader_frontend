@@ -5,13 +5,13 @@ import { authOptions } from "@/lib/auth";
 import { orderService } from "@/services";
 import { getServerSession } from "next-auth";
 
-const getUserOrders = async () => {
-  const session = await getServerSession(authOptions);
-  const orders = await orderService.getUserOrders(session?.accessToken || "");
-  return orders;
-};
+// const getUserOrders = async () => {
+//   const session = await getServerSession(authOptions);
+//   const orders = await orderService.getUserOrders(session?.accessToken || "");
+//   return orders;
+// };
 
-export default async function HistoryPage() {
+export default function HistoryPage() {
   // const orders = await getUserOrders();
 
   return (

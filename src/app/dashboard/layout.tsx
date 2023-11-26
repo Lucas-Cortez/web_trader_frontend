@@ -5,7 +5,7 @@ import { InitializeChartsProvider } from "@/providers/InitializeChartsProvider";
 // import { getServerSession } from "next-auth";
 // import { redirect } from "next/navigation";
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   // const session = await getServerSession(authOptions);
   // console.log(session);
 
