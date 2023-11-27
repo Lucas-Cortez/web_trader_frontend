@@ -6,6 +6,7 @@ import { useOrderStore } from "@/stores/useOrderStore";
 import { useStrategyStore } from "@/stores/useStrategyStore";
 import { useSession } from "next-auth/react";
 import { ReactNode, useEffect } from "react";
+import { useStoreInContext } from "./ZustandProvider";
 
 export const InitializeChartsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { initializeTrades } = useTrade();
@@ -13,6 +14,7 @@ export const InitializeChartsProvider: React.FC<{ children: ReactNode }> = ({ ch
   const loaded = useStrategyStore((state) => state.loaded);
   const setOrders = useOrderStore((state) => state.setOrders);
   const { data } = useSession();
+  const add = useStoreInContext((state) => state.add);
 
   useEffect(() => {
     if (data?.accessToken)
@@ -31,6 +33,11 @@ export const InitializeChartsProvider: React.FC<{ children: ReactNode }> = ({ ch
     if (loaded) initializeTrades();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded]);
+
+  useEffect(() => {
+    // @ts-ignore
+    add(4);
+  }, [add]);
 
   return children;
 };

@@ -1,21 +1,20 @@
 "use client";
 
-import { useOrderStore } from "@/stores/useOrderStore";
-import { OrderStore } from "@/stores/useOrderStore/types";
+import { TestStore, useTestStore } from "@/stores/testStore";
 import { ReactNode, createContext, useContext, useRef } from "react";
 import { useStore } from "zustand";
 
-const StoreContext = createContext<typeof useOrderStore>(null!);
+const StoreContext = createContext<typeof useTestStore>(null!);
 
 export const ZustandProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const storeRef = useRef<typeof useOrderStore>();
+  const storeRef = useRef<typeof useTestStore>();
 
-  if (!storeRef.current) storeRef.current = useOrderStore;
+  if (!storeRef.current) storeRef.current = useTestStore;
 
   return <StoreContext.Provider value={storeRef.current}>{children}</StoreContext.Provider>;
 };
 
-const useStoreInContext = (selector: (state: OrderStore) => unknown) => {
+export const useStoreInContext = (selector: (state: TestStore) => unknown) => {
   const store = useContext(StoreContext);
 
   if (!store) throw new Error("Missing StoreProvider");
@@ -23,8 +22,20 @@ const useStoreInContext = (selector: (state: OrderStore) => unknown) => {
   return useStore(store, selector);
 };
 
-function Comp() {
-  const opa = useStoreInContext((state) => state.total);
+// const StoreContext = createContext<StoreApi<TestStore>>(null!);
 
-  return <div>oi</div>;
-}
+// export const ZustandProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+//   const storeRef = useRef<any>();
+
+//   if (!storeRef.current) storeRef.current = createStore(testStore);
+
+//   return <StoreContext.Provider value={storeRef.current}>{children}</StoreContext.Provider>;
+// };
+
+// export const useStoreInContext = (selector: (state: TestStore) => unknown) => {
+//   const store = useContext(StoreContext);
+
+//   if (!store) throw new Error("Missing StoreProvider");
+
+//   return useStore(store, selector);
+// };
