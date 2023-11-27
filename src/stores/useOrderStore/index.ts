@@ -6,7 +6,8 @@ import { Order } from "@/entities/order";
 const orderStore: StateCreator<OrderStore, [], []> = (set) => ({
   orders: [],
   total: 0,
-  setOrders: (orders) => set(() => ({ orders, total: orders.length })),
+  loaded: false,
+  setOrders: (orders) => set(() => ({ orders, total: orders.length, loaded: true })),
   addOrder: (order: Order) => set((state) => ({ orders: [...state.orders, order], total: state.total + 1 })),
 });
 

@@ -16,6 +16,7 @@ type Pagination = {
 
 export const OrderTable: React.FC = () => {
   const orders = useOrderStore((state) => state.orders);
+  const ordersLoaded = useOrderStore((state) => state.loaded);
   const [pagination, setPagination] = useState<Pagination>({
     skip: 0,
     take: 10,
@@ -41,6 +42,8 @@ export const OrderTable: React.FC = () => {
   const next = () => {
     if (!cantGoNext) setPagination((prev) => ({ ...prev, skip: prev.skip + prev.take }));
   };
+
+  if (!ordersLoaded) return <div className="bg-white shadow-lg rounded-lg p-4">Carregando...</div>;
 
   if (!orders.length)
     return <div className="bg-white shadow-lg rounded-lg p-4">Nenhuma ordem encontrada...</div>;
