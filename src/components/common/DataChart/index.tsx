@@ -10,17 +10,6 @@ import { Trade } from "@/enums/trade";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-// const formatDate = (timestamp: number) => {
-//   const months = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-//   const date = new Date(timestamp);
-
-//   const minutes = date.getMinutes();
-
-//   return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} ${date.getHours()}:${
-//     (minutes < 10 ? "0" : "") + minutes
-//   }`;
-// };
-
 const TRADES = {
   [Trade.BUY]: { color: "#2761ff", label: "Buy" },
   [Trade.SELL]: { color: "#2761ff", label: "Sell" },
@@ -109,40 +98,6 @@ function createOptions(orders: ChartOrder[]): Props["options"] {
         };
       }),
     },
-    // annotations: {
-    //   xaxis: [
-    //     {
-    //       x: new Date(1699645740000).getTime(),
-    //       borderColor: "#2761ff",
-    //       label: {
-    //         borderColor: "#2761ff",
-    //         style: {
-    //           fontSize: "12px",
-    //           color: "#fff",
-    //           background: "#2761ff",
-    //         },
-    //         orientation: "horizontal",
-    //         offsetY: 7,
-    //         text: "Buy",
-    //       },
-    //     },
-    //     {
-    //       x: new Date(1699648080000).getTime(),
-    //       borderColor: "#ffbd67",
-    //       label: {
-    //         borderColor: "#ffbd67",
-    //         style: {
-    //           fontSize: "12px",
-    //           color: "#fff",
-    //           background: "#ffbd67",
-    //         },
-    //         orientation: "horizontal",
-    //         offsetY: 7,
-    //         text: "Sell",
-    //       },
-    //     },
-    //   ],
-    // },
   };
 }
 
@@ -154,18 +109,12 @@ export const DataChart: React.FC<DataChartProps> = ({ profileId }) => {
   const data = useTradeStore((state) => state.tradeProfiles[profileId].data);
   const orders = useTradeStore((state) => state.tradeProfiles[profileId].orders);
 
-  // const [options, setOptions] = useState<Props["options"]>(OPTIONS);
-
-  // const series: Props["series"] = [{ data: convertToChartData(data) }];
-
   const series = useMemo(() => {
     return [{ data: convertToChartData(data) }];
   }, [data]) satisfies Props["series"];
 
   const options = useMemo(() => {
     const firstDate = series[0].data[0].x.getTime();
-
-    // console.log({ orders, firstDate });
 
     const filteredOrders = orders.filter((order) => new Date(order.createdAt).getTime() >= firstDate);
 
