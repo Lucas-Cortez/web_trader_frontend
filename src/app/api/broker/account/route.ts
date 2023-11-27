@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
     const client = new Spot(key, secret, { baseURL: process.env.NEXT_PUBLIC_BROKER_API_URL });
 
     const account = await client.accountInformation();
-    console.log(account);
 
     return NextResponse.json(account, { status: 200 });
   } catch (error) {
