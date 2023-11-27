@@ -50,7 +50,7 @@ export const useTrade = () => {
     if (!session) return;
 
     console.log(`${profile.id}: ${tradeType} ORDER!!`);
-    toast(`${profile.id}: ${tradeType === Trade.BUY ? "Compra" : "Venda"}`, { position: "bottom-right" });
+    toast(`${profile.name}: ${tradeType === Trade.BUY ? "Compra" : "Venda"}`, { position: "bottom-right" });
     const opa = await orderService.createOrder(profile.id, { tradeType, closingPrice }, session.accessToken);
     runProfileRegister(profile.id);
   };

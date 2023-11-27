@@ -34,11 +34,11 @@ export class AppOrderService implements OrderService {
 
     // if (response.status !== 200) throw new Error("server error");
 
-    const data = (await response.json()) as { orders: Order[] };
+    const data = (await response.json()) as { orders: (Omit<Order, "createdAt"> & { createdAt: string })[] };
 
     const { orders } = data;
 
-    return orders;
+    return orders.map((order) => ({ ...order, createdAt: new Date(order.createdAt) }));
   }
 
   async getProfileOrders(

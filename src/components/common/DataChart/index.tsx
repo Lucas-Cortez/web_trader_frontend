@@ -22,8 +22,8 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false })
 // };
 
 const TRADES = {
-  [Trade.BUY]: { color: "#2761ff", label: "Compra" },
-  [Trade.SELL]: { color: "#2761ff", label: "Venda" },
+  [Trade.BUY]: { color: "#2761ff", label: "Buy" },
+  [Trade.SELL]: { color: "#2761ff", label: "Sell" },
 };
 
 const TRADES_TYPE: Record<string, Trade> = {
@@ -93,7 +93,7 @@ function createOptions(orders: ChartOrder[]): Props["options"] {
       xaxis: orders.map((order) => {
         const value = TRADES[order.tradeType];
         return {
-          x: order.date.getTime(),
+          x: new Date(order.date).getTime(),
           borderColor: value.color,
           label: {
             borderColor: value.color,
@@ -165,7 +165,9 @@ export const DataChart: React.FC<DataChartProps> = ({ profileId }) => {
   const options = useMemo(() => {
     const firstDate = series[0].data[0].x.getTime();
 
-    const filteredOrders = orders.filter((order) => order.createdAt.getTime() >= firstDate);
+    // console.log({ orders, firstDate });
+
+    const filteredOrders = orders.filter((order) => new Date(order.createdAt).getTime() >= firstDate);
 
     const chartOrders: ChartOrder[] = filteredOrders.map((order) => ({
       date: order.createdAt,
