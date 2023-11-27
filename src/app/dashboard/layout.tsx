@@ -4,7 +4,6 @@ import { InitializeChartsProvider } from "@/providers/InitializeChartsProvider";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { ZustandProvider } from "@/providers/ZustandProvider";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -16,13 +15,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // console.log(orders);
 
   return (
-    <ZustandProvider>
-      <InitializeChartsProvider>
-        <div className="min-h-screen h-full bg-application">
-          <Navbar />
-          <div className="pt-16">{children}</div>
-        </div>
-      </InitializeChartsProvider>
-    </ZustandProvider>
+    <InitializeChartsProvider>
+      <div className="min-h-screen h-full bg-application">
+        <Navbar />
+        <div className="pt-16">{children}</div>
+      </div>
+    </InitializeChartsProvider>
   );
 }
